@@ -1,0 +1,24 @@
+const firebase = require('firebase');
+
+const config = {
+    apiKey: "AIzaSyDf9ldvI28PNrEYa7POD_eguvFn0JMUzjE",
+    authDomain: "reactflashcards-160cc.firebaseapp.com",
+    databaseURL: "https://reactflashcards-160cc.firebaseio.com",
+    projectId: "reactflashcards-160cc",
+    storageBucket: "reactflashcards-160cc.appspot.com",
+    messagingSenderId: "954132158399",
+    appId: "1:954132158399:web:ec1df1cb605aac8e25330a"
+};
+
+firebase.initializeApp(config);
+
+const provider = new firebase.auth.GoogleAuthProvider();
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+module.exports = {
+  firebase,
+  provider,
+  auth,
+  db
+};
