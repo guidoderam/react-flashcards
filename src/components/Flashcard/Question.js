@@ -2,8 +2,8 @@ import React from 'react';
 
 export const Question = (props) => {
     return (
-    <div onClick={props.onClick}>
-        <h1>{props.question}</h1>
-    </div>
+    <span onClick={props.onClick}>
+        {props.question}
+    </span>
     );
   }

@@ -5,12 +5,14 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import { Container } from 'reactstrap';
+import MyNavbar from './components/Navbar'
 import { auth, provider } from './firebase.js'
-import './App.css';
 import FlashcardContainer from './components/Flashcard/FlashcardContainer';
 import List from './components/Flashcard/List';
 import Create from './components/Flashcard/Create';
 import Edit from './components/Flashcard/Edit';
+import './App.css';
 
 class App extends React.Component {
   constructor(props) {
@@ -32,35 +34,12 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
+      <>
         <Router>
-          <header className="App-header">
-            <nav>
-              <ul>
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>
-                  <Link to="/list">List</Link>
-                </li>
-              </ul>
-            </nav>
-
-            {/* <img src={logo} className="App-logo" alt="logo" /> */}
-            {
-              this.state.user
-                ? <p>Hello, {this.state.user.displayName}</p>
-                : <p>Please sign in.</p>
-            }
-            {
-              this.state.user
-                ? <button onClick={this.signOut}>Sign out</button>
-                : <button onClick={this.signIn}>Sign in with Google</button>
-            }
-
-
-            {/* A <Switch> looks through its children <Route>s and
-                renders the first one that matches the current URL. */}
+          <header>
+            <MyNavbar user={this.state.user} />
+          </header>
+          <main role="main">
             <Switch>
               <Route path="/list">
                 <List user={this.state.user} />
@@ -75,19 +54,25 @@ class App extends React.Component {
                 <FlashcardContainer user={this.state.user} />
               </Route>
             </Switch>
-          </header>
+            {/* <img src={logo} className="App-logo" alt="logo" /> */}
+{/*             {
+              this.state.user
+                ? <p>Hello, {this.state.user.displayName}</p>
+                : <p>Please sign in.</p>
+            }
+            {
+              this.state.user
+                ? <button onClick={this.signOut}>Sign out</button>
+                : <button onClick={this.signIn}>Sign in with Google</button>
+            } */}
+
+
+            {/* A <Switch> looks through its children <Route>s and
+                renders the first one that matches the current URL. */}
+
+          </main>
         </Router>
-
-        <header className="App-header">
-
-          
-{/*           <Tags tags={this.state.tags} />
-          {this.state.cards[this.state.currentCardIndex]}
-          <div className="info">
-            <span>{this.state.currentCardIndex + 1} / {this.state.cards.length}</span>
-          </div> */}
-        </header>
-      </div>
+      </>
     );
   }
 }

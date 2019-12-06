@@ -1,50 +1,69 @@
-.App {
-  text-align: center;
+body {
+  /* Find better solution that also keeps the same distance on mobile */
+  padding-top: 6rem;
 }
 
-.App-logo {
-  height: 40vmin;
+.tags .badge {
+  margin-right: 5px;
 }
 
-.App-header {
-  background-color: #121212;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #09d3ac;
-}
-
-.card {
-  border-width: 2px;
-  border-style: groove;
-  background-color: #282c34;
-  padding: 30px;
-  min-height: 400px;
-}
-
-h1 {
-  margin: 0;
-}
-
-ul {
-  background-color: #282c34;
-  padding: 0;
-  margin: 0 0 0 20;
-}
-
-ul > li {
-  display: inline-block;
-  margin: 5px;
-}
-
-ul > li:hover {
-  text-decoration: underline;
+.tags .badge:hover {
   cursor: pointer;
+}
+
+.flip-card {
+  background-color: transparent;
+  width: 90vw;
+  height: calc(100vw * (2/3));
+  perspective: 2500px;
+  margin: auto;
+  max-height: 85vh;
+  max-width: 1900px; /* todo: find solution that scales with height */
+}
+
+.flip-card:hover {
+  cursor: pointer;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.flip-card .flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background-color: dodgerblue;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  font-size: 5vw;
+  padding: 10px;
+}
+
+.flip-card-front {
+  color: black;
+}
+
+.flip-card-front span {
+  align-self: center;
+}
+
+.flip-card-back {
+  color: white;
+  transform: rotateY(180deg);
+}
+
+.flip-card-back div {
+  align-self: center;
 }

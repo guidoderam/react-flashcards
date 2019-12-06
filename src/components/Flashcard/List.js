@@ -1,4 +1,5 @@
 import React from 'react';
+import { Table, Button } from 'reactstrap';
 import Tags from './Tags';
 import {db} from "../../firebase.js";
 import {
@@ -61,8 +62,8 @@ export default class List extends React.Component {
     render() {
         return (
             <div>
-                <h1>List</h1>
-                <table>
+                <h1>My cards</h1>
+                <Table>
                     <thead>
                         <tr>
                             <th>Question</th>
@@ -74,10 +75,11 @@ export default class List extends React.Component {
                     <tbody>
                         {this.state.cards}
                     </tbody>
-                </table>
+                </Table>
                 <div>
-                    <Link to="/create">Create new card</Link>
-                </div>
+                    <Button color="primary" tag={Link} to="/create">Create new card</Button>
+{/*                     <Link to="/create">Create new card</Link>
+ */}                </div>
                 
             </div>
         );

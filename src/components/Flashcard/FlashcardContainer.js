@@ -2,6 +2,7 @@ import React from 'react';
 import Flashcard from './Flashcard';
 import Tags from './Tags';
 import {db} from "../../firebase.js";
+import { Badge, Row, Col } from 'reactstrap';
 
 export default class FlashcardContainer extends React.Component  {
   constructor(props) {
@@ -12,7 +13,7 @@ export default class FlashcardContainer extends React.Component  {
           key={0}
           title="Loading cards..."
           answer="" />],
-        tags: [<li key="all">all</li>]
+        tags: [<Badge key="all" id="all" onClick={this.handleTagClick}>all</Badge>]
     };
   }
 
@@ -34,7 +35,7 @@ export default class FlashcardContainer extends React.Component  {
                 <Flashcard
                 onRatingClick={this.handleRatingClick}
                 key={card.id}
-                title={card.question}
+                question={card.question}
                 answer={card.answer} />
             );
             this.setState(state => ({
@@ -60,11 +61,12 @@ export default class FlashcardContainer extends React.Component  {
         
         if (data && data.length > 0) {
             const tags = data.map((tag) =>
-                <li key={tag.id}
+                <Badge color="secondary"
+                    key={tag.id}
                     id={tag.id}
                     onClick={this.handleTagClick}>
-                {tag.name}
-                </li>
+                  {tag.name}
+                </Badge>
             );
 
             this.setState(state => (
@@ -82,7 +84,13 @@ export default class FlashcardContainer extends React.Component  {
   handleRatingClick = (e) => {
     const cardKey = this.state.cards[this.state.currentCardIndex].key;
     const ratingId = e.target.id;
+
+    if (!cardKey || !ratingId){
+      return;
+    }
+
     const ratingValue = ratingId.split('-')[1];
+
     this.saveRating(cardKey, ratingValue);
 
     this.nextCard();
@@ -116,13 +124,16 @@ export default class FlashcardContainer extends React.Component  {
 
   render() {
     return (
-        <div>
-            <Tags tags={this.state.tags} />
-            {this.state.cards[this.state.currentCardIndex]}
-            <div className="info">
-                <span>{this.state.currentCardIndex + 1} / {this.state.cards.length}</span>
-            </div>
+      <>
+        <Tags tags={this.state.tags} />
+        <div className="flip-container">
+          {this.state.cards[this.state.currentCardIndex]}
         </div>
+        
+        <div className="info">
+            <span>{this.state.currentCardIndex + 1} / {this.state.cards.length}</span>
+        </div>
+      </>
     );
   }
 }
