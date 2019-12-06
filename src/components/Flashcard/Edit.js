@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from "../../firebase.js";
-import { Container, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Container, Col, Row, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
 
 export default class Create extends React.Component {
     constructor(props) {
@@ -91,38 +91,43 @@ export default class Create extends React.Component {
         const {question, answer, tag} = this.state;
         return (
             <Container>
-                <h2>Edit</h2>
-                <Form onSubmit={ (e) => this.handleSubmit(e) }>
-                    <FormGroup>
-                        <Label for="question">Question</Label>
-                        <Input type="text" name="question" id="question" 
-                                        valid={ this.state.validate.question === 'has-success' }
-                                        invalid={ this.state.validate.question === 'has-danger' }
-                                        value={question} onChange={ (e) => {this.validateTextRequired(e)
-                                                                            this.handleChange(e) }} />
-                        <FormFeedback>Question cannot be empty</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="answer">Answer</Label>
-                        <Input type="textarea" name="answer" id="answer"
-                                        valid={ this.state.validate.answer === 'has-success' }
-                                        invalid={ this.state.validate.answer === 'has-danger' }
-                                        value={answer} onChange={ (e) => { this.validateTextRequired(e)
-                                                                            this.handleChange(e) }} />
-                        <FormFeedback>Answer cannot be empty</FormFeedback>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="tag">Tag</Label>
-                        <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
-                        <option value="css">CSS</option>
-                            <option value="react">ReactJS</option>
-                            <option value="js">JS</option>
-                            <option value="node">NodeJS</option>
-                            <option value="express">Express</option>
-                        </Input>
-                    </FormGroup>
-                    <Button>Submit</Button>
-                </Form>
+                <Row>
+                    <Col>
+                        <h2>Edit</h2>
+                        <Form onSubmit={ (e) => this.handleSubmit(e) }>
+                            <FormGroup>
+                                <Label for="question">Question</Label>
+                                <Input type="text" name="question" id="question" 
+                                                valid={ this.state.validate.question === 'has-success' }
+                                                invalid={ this.state.validate.question === 'has-danger' }
+                                                value={question} onChange={ (e) => {this.validateTextRequired(e)
+                                                                                    this.handleChange(e) }} />
+                                <FormFeedback>Question cannot be empty</FormFeedback>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for="answer">Answer</Label>
+                                <Input type="textarea" name="answer" id="answer"
+                                                valid={ this.state.validate.answer === 'has-success' }
+                                                invalid={ this.state.validate.answer === 'has-danger' }
+                                                value={answer} onChange={ (e) => { this.validateTextRequired(e)
+                                                                                    this.handleChange(e) }} />
+                                <FormFeedback>Answer cannot be empty</FormFeedback>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for="tag">Tag</Label>
+                                <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
+                                <option value="css">CSS</option>
+                                    <option value="react">ReactJS</option>
+                                    <option value="js">JS</option>
+                                    <option value="node">NodeJS</option>
+                                    <option value="express">Express</option>
+                                </Input>
+                            </FormGroup>
+                            <Button color="primary">Submit</Button>
+                        </Form>
+                    </Col>
+                </Row>
+
             </Container>
         );
     }

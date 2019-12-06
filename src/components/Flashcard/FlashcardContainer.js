@@ -9,19 +9,21 @@ export default class FlashcardContainer extends React.Component  {
     super(props);
     this.state = {
         state: 'initial', // states are: initial, inprogress, end
+        selectedTags: [],
         currentCardIndex: 0,
         cards: [<Flashcard
           key={0}
           title="Loading cards..."
           answer="" />],
-        tags: [<Badge key="all" id="all" onClick={this.handleTagClick}>all</Badge>]
+        tags: [],
+        startButtonDisabled: false
     };
   }
 
-  getFlashcards = (tag) => {    
+  getFlashcards = () => {
     let query = db.collection("Cards");
-    if (tag && tag !== 'all') {
-        query = query.where('tags', 'array-contains-any', [tag]);
+    if (this.state.selectedTags.length > 0) {
+        query = query.where('tags', 'array-contains-any', this.state.selectedTags);
     }
     query.get()
     .then(querySnapshot => {
@@ -40,14 +42,28 @@ export default class FlashcardContainer extends React.Component  {
                 answer={card.answer} />
             );
             this.setState(state => ({
-                cards: cards
+                cards: cards,
+                state: 'inprogress'
             }));
         }
     });
   }
 
-  handleTagClick = (e) => {
-    this.getFlashcards(e.target.id);
+  handleTagClick = selected => {
+    console.log(`You selected: ${selected}`);
+    const selectedTags = this.state.selectedTags;
+    const index = selectedTags.indexOf(selected);
+    if (index < 0) {
+      selectedTags.push(selected);
+    } else {
+      selectedTags.splice(index, 1);
+    }
+
+    this.setState({
+      selectedTags: selectedTags
+    });
+
+    console.log(this.state.selectedTags);
   }
 
   getTags = () => {
@@ -62,24 +78,25 @@ export default class FlashcardContainer extends React.Component  {
         
         if (data && data.length > 0) {
             const tags = data.map((tag) =>
-                <Badge color="secondary"
+                /* todo: fix color switching */
+                <Badge color={this.state.selectedTags.includes(tag.name) ? 'primary' : 'secondary'}
                     key={tag.id}
                     id={tag.id}
-                    onClick={this.handleTagClick}>
+                    name={tag.name}
+                    onClick={() => this.handleTagClick(tag.name)}>
                   {tag.name}
                 </Badge>
             );
 
             this.setState(state => (
-                {tags: state.tags.concat(tags)}
-              ));
+              {tags: state.tags.concat(tags)}
+            ));
         }
     });
   }
 
   componentDidMount() {
     this.getTags();
-    this.getFlashcards();
   }
 
   handleRatingClick = (e) => {
@@ -124,7 +141,6 @@ export default class FlashcardContainer extends React.Component  {
     this.setState(state => ({
       currentCardIndex: this.state.currentCardIndex + 1
     }));
-
   }
 
   handleRestartButtonClick = (e) => {
@@ -140,11 +156,15 @@ export default class FlashcardContainer extends React.Component  {
   handleStartClick = (e) => {
     e.preventDefault();
 
-    this.setState((state) => (
-      {
-        state: 'inprogress'
-      }
-    ));
+    this.setState({
+      startButtonDisabled: true
+    });
+
+    this.getFlashcards();
+
+    this.setState({
+      startButtonDisabled: false
+    });
   }
 
   render() {
@@ -156,10 +176,19 @@ export default class FlashcardContainer extends React.Component  {
             <Container>
               <Row>
                 <Col>
-                  <p>Pick a category to start a new round</p>
+                  <h2>Welcome</h2>
+                  <p>Pick a category to start a new round.</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
                   <Tags tags={this.state.tags} />
-                  <Button color="primary" onClick={this.handleStartClick}>
-                    Start
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Button color="primary" onClick={this.handleStartClick} disabled={this.state.startButtonDisabled}>
+                      Start
                   </Button>
                 </Col>
               </Row>
