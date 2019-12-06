@@ -2,12 +2,13 @@ import React from 'react';
 import Flashcard from './Flashcard';
 import Tags from './Tags';
 import {db} from "../../firebase.js";
-import { Badge, Row, Col } from 'reactstrap';
+import { Badge, Container, Row, Col, Button } from 'reactstrap';
 
 export default class FlashcardContainer extends React.Component  {
   constructor(props) {
     super(props);
     this.state = {
+        state: 'initial', // states are: initial, inprogress, end
         currentCardIndex: 0,
         cards: [<Flashcard
           key={0}
@@ -113,26 +114,84 @@ export default class FlashcardContainer extends React.Component  {
   }
 
   nextCard = () => {
-    if (this.state.currentCardIndex +1 === this.state.cards.length) {
+    if (this.state.currentCardIndex + 1 === this.state.cards.length) {
+      this.setState(state => ({
+        state: 'end'
+      }));
       return;
-    }
+    } 
 
     this.setState(state => ({
       currentCardIndex: this.state.currentCardIndex + 1
     }));
+
+  }
+
+  handleRestartButtonClick = (e) => {
+    e.preventDefault();
+
+    this.setState((state) => (
+      {
+        state: 'initial'
+      }
+    ))
+  }
+
+  handleStartClick = (e) => {
+    e.preventDefault();
+
+    this.setState((state) => (
+      {
+        state: 'inprogress'
+      }
+    ));
   }
 
   render() {
     return (
       <>
-        <Tags tags={this.state.tags} />
-        <div className="flip-container">
-          {this.state.cards[this.state.currentCardIndex]}
-        </div>
-        
-        <div className="info">
-            <span>{this.state.currentCardIndex + 1} / {this.state.cards.length}</span>
-        </div>
+        {
+          this.state.state === 'initial' && 
+          <>
+            <Container>
+              <Row>
+                <Col>
+                  <p>Pick a category to start a new round</p>
+                  <Tags tags={this.state.tags} />
+                  <Button color="primary" onClick={this.handleStartClick}>
+                    Start
+                  </Button>
+                </Col>
+              </Row>
+            </Container>
+          </>
+        }
+        {
+          this.state.state === 'inprogress' &&
+          <>
+            <div className="flip-container">
+              {this.state.cards[this.state.currentCardIndex]}
+            </div>
+            <div className="info">
+              <span>{this.state.currentCardIndex + 1} / {this.state.cards.length}</span>
+            </div>
+          </>
+        }
+        {
+          this.state.state === 'end' &&
+          <>
+            <Container>
+              <Row>
+                <Col>
+                  <p>You've completed your current round!</p>
+                  <Button color="primary" onClick={this.handleRestartButtonClick}>
+                    New round
+                  </Button>
+                </Col>
+              </Row>
+            </Container>
+          </>
+        }
       </>
     );
   }
