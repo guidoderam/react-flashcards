@@ -96,3 +96,12 @@ body {
 .rating span:hover ~ span {
   color: yellow;
 }
+
+.info {
+  margin-top: 5px;
+  display: flex;
+}
+
+.info span {
+  margin: auto;
+}
