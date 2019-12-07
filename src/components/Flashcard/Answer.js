@@ -1,12 +1,10 @@
 import React from 'react';
-import Rating from './Rating';
 
 export default class Answer extends React.Component {
     render() {
       return (
-        <div>
+        <div className="answer">
             <p>{this.props.answer}</p>
-            <Rating onClick={this.props.onClick} />
         </div>
       );
     }

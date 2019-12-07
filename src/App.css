@@ -53,6 +53,7 @@ body {
   background-color: dodgerblue;
   border-radius: 5px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   font-size: 5vw;
   padding: 10px;
@@ -73,4 +74,25 @@ body {
 
 .flip-card-back div {
   align-self: center;
+}
+
+.answer {
+  margin: auto;
+}
+
+.rating {
+  width: 100%;
+  margin-bottom: 5px;
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
+.rating span:hover {
+  color: yellow;
+  font-size: 3rem;
+  transition: font-size 0.4s ease; 
+}
+
+.rating span:hover ~ span {
+  color: yellow;
 }

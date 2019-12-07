@@ -1,6 +1,7 @@
 import React from 'react';
 import {Question} from './Question';
 import Answer from './Answer';
+import Rating from './Rating';
 
 export default class Flashcard extends React.Component  {
   constructor(props) {
@@ -19,16 +20,7 @@ export default class Flashcard extends React.Component  {
   }
 
   render() {
-/*     const answer = this.state.showAnswer ?
-      <Answer answer={this.props.answer} onClick={this.props.onRatingClick} />
-      : null; */
-
     return (
-/*       <div className="card">
-        <Question question={this.props.question} onClick={this.handleClick} />
-        {answer}
-      </div> */
-
       <div className="flip-card" onClick={this.handleClick}>
         <div className="flip-card-inner" className={this.state.flipped ? 'flip-card-inner flipped' : 'flip-card-inner' }>
           <div className="flip-card-front">
@@ -36,9 +28,9 @@ export default class Flashcard extends React.Component  {
           </div>
           <div className="flip-card-back">
             <Answer answer={this.props.answer} onClick={this.props.onRatingClick} />
+            <Rating onClick={this.props.onRatingClick} />
           </div>
         </div>
-
       </div>
     );
   }
