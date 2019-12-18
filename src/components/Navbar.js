@@ -27,7 +27,7 @@ const MyNavbar = (props) => {
   const toggle = () => setIsOpen(!isOpen);
 
   return (
-    <div>
+    <>
       <Navbar color="light" light expand="md" className="fixed-top">
         <NavbarBrand href="/">React-Flashcards</NavbarBrand>
         <NavbarToggler onClick={toggle} />
@@ -47,9 +47,8 @@ const MyNavbar = (props) => {
                     {
                         props.user ?
                         <img src={`${props.user.photoURL}=h50`} className="rounded-circle z-depth-0" alt="avatar"/> :
-                        <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-2.jpg" className="rounded-circle z-depth-0" alt="avatar image"/>
+                        <img src="/anonymous.png" className="rounded-circle z-depth-0" alt="avatar image"/>
                     }
-                    
                 </a>
                 <div className="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
                     aria-labelledby="navbarDropdownMenuLink-55">
@@ -62,7 +61,7 @@ const MyNavbar = (props) => {
          {/*  <NavbarText>Simple Text</NavbarText> */}
         </Collapse>
       </Navbar>
-    </div>
+    </>
   );
 }
 

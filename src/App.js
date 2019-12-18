@@ -77,9 +77,4 @@ class App extends React.Component {
   }
 }
 
-/* const firebaseAppAuth = firebase.auth();
-const providers = {
-  googleProvider: new firebase.auth.GoogleAuthProvider(),
-}; */
-
 export default App;

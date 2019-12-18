@@ -3,6 +3,10 @@ body {
   padding-top: 6rem;
 }
 
+nav.navbar {
+  padding: 0px 16px;
+}
+
 .row {
   margin-top: 15px;
 }
@@ -89,7 +93,7 @@ body {
 
 .rating span:hover {
   color: yellow;
-  font-size: 3rem;
+  font-size: 10rem;
   transition: font-size 0.4s ease; 
 }
 
