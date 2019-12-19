@@ -32,12 +32,20 @@ class App extends React.Component {
     });
   }
 
+  handleOnUserAvatarClick = () => {
+    if (this.state.user) {
+      this.signOut();
+    } else {
+      this.signIn();
+    }
+  }
+
   render() {
     return (
       <>
         <Router>
           <header>
-            <MyNavbar user={this.state.user} />
+            <MyNavbar user={this.state.user} onUserAvatarClick={this.handleOnUserAvatarClick}/>
           </header>
           <main role="main">
             <Switch>

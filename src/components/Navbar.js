@@ -42,20 +42,20 @@ const MyNavbar = (props) => {
             </Nav>
             <ul className="navbar-nav ml-auto nav-flex-icons">
                 <li className="nav-item avatar dropdown">
-                <a className="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
+                <a onClick={props.onUserAvatarClick} className="nav-link" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" style={{cursor: 'pointer'}}>
                     {
                         props.user ?
                         <img src={`${props.user.photoURL}=h50`} className="rounded-circle z-depth-0" alt="avatar"/> :
                         <img src="/anonymous.png" className="rounded-circle z-depth-0" alt="avatar image"/>
                     }
                 </a>
-                <div className="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
+{/*                 <div className="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
                     aria-labelledby="navbarDropdownMenuLink-55">
                     <a className="dropdown-item" href="/">Action</a>
                     <a className="dropdown-item" href="/">Another action</a>
                     <a className="dropdown-item" href="/">Something else here</a>
-                </div>
+                </div> */}
                 </li>
             </ul>
          {/*  <NavbarText>Simple Text</NavbarText> */}
