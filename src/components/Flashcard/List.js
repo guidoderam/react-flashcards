@@ -46,6 +46,7 @@ export default class List extends React.Component {
                         <tr key={card.id}> 
                             <td>{card.question}</td>
                             <td>{card.answer}</td>
+                            <td>{card.readmore}</td>
                             <td data-card={card.id} onClick={this.handleDelete}>Delete</td>
                             <td>
                                 <Link to={`/edit/${card.id}`}>Edit</Link>
@@ -70,6 +71,7 @@ export default class List extends React.Component {
                             <tr>
                                 <th>Question</th>
                                 <th>Answer</th>
+                                <th>Read more</th>
                                 <th>Delete</th>
                                 <th>Edit</th>
                             </tr>

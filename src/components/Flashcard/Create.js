@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from "../../firebase.js";
-import { Container, Row, Col, Button, Form, FormGroup, Label, Input, FormFeedback } from 'reactstrap';
+import { Container, Row, Col, Button, Form, FormGroup, Label, Input, FormText, FormFeedback } from 'reactstrap';
 
 export default class Create extends React.Component {
     constructor(props) {
@@ -10,10 +10,12 @@ export default class Create extends React.Component {
             question: '',
             answer: '',
             id: '',
+            readmore: '',
             tags: [],
             validate: {
                 question: '',
-                answer: ''
+                answer: '',
+                readmore: ''
             }
         };
 
@@ -35,6 +37,7 @@ export default class Create extends React.Component {
 
         const question = this.state.question;
         const answer = this.state.answer;
+        const readmore = this.state.readmore;
         const tags = [this.state.tag];
         const user = this.props.user.uid;
 
@@ -47,6 +50,7 @@ export default class Create extends React.Component {
         const newCard = {
             question,
             answer,
+            readmore,
             tags,
             user
         };
@@ -55,7 +59,8 @@ export default class Create extends React.Component {
             .then((docRef) => {
                 this.setState({
                     question: '',
-                    answer: ''
+                    answer: '',
+                    readmore: ''
                 });
                 this.props.history.push('/list');
             })
@@ -71,8 +76,29 @@ export default class Create extends React.Component {
         this.setState({ validate });
     }
 
+    validateUrl(e) {
+        const input = e.target.value;
+
+        if (input === '') {
+            return;
+        }
+
+        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
+        const isValid = !!pattern.test(input);
+
+        const { validate } = this.state;
+        validate[e.target.name] = isValid ? 'has-success' : 'has-danger';
+        this.setState({ validate });
+    }
+
     render() {
-        const {question, answer, tag} = this.state;
+        const {question, answer, readmore, tag} = this.state;
         return (
             <Container>
                 <Row>
@@ -96,6 +122,19 @@ export default class Create extends React.Component {
                                             value={answer} onChange={ (e) => { this.validateTextRequired(e)
                                                                                 this.handleChange(e) }} />
                             <FormFeedback>Answer cannot be empty</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="readmore">Read more</Label>
+                            <Input type="text" name="readmore" id="readmore"
+                                            valid={ this.state.validate.readmore === 'has-success' }
+                                            invalid={ this.state.validate.readmore === 'has-danger' }
+                                            value={readmore} 
+                                            onChange={(e) => this.handleChange(e)}
+                                            onBlur={ (e) => this.validateUrl(e)} />
+                            <FormText color="muted">
+                                Link to a page where the reader can find more information about the card's subject
+                            </FormText>          
+                            <FormFeedback>Read more needs to be a valid URL</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="tag">Tag</Label>
