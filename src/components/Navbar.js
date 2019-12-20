@@ -33,12 +33,11 @@ const MyNavbar = (props) => {
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
             <Nav className="mr-auto" navbar>
-              <NavItem>
-                <NavLink tag={RRNavLink} exact to="/" activeClassName="active">Home</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={RRNavLink} exact to="/list" activeClassName="active">My cards</NavLink>
-              </NavItem>
+              {
+                props.user ?
+                  <NavItem><NavLink tag={RRNavLink} exact to="/list" activeClassName="active">My cards</NavLink></NavItem>
+                : null
+              }
             </Nav>
             <ul className="navbar-nav ml-auto nav-flex-icons">
                 <li className="nav-item avatar dropdown">
