@@ -5,6 +5,7 @@ import {db} from "../../firebase.js";
 import {
     Link
   } from "react-router-dom";
+  import { auth } from './../../firebase.js'
 
 export default class List extends React.Component {
     constructor(props) {
@@ -16,7 +17,11 @@ export default class List extends React.Component {
     }
 
     componentDidMount() {
-        this.getCards();
+        auth.onAuthStateChanged((user) => { 
+            if (user) {
+                this.getCards(user.uid);
+            }
+          });
     }
 
     handleDelete = (e) => {
@@ -31,9 +36,10 @@ export default class List extends React.Component {
         });
     }
 
-    getCards = () => {
+    getCards = (user) => {
         let query = db.collection("cards");
-        query.get()
+        query.where("user", "==", user)
+            .get()
             .then(querySnapshot => {
                 const data = querySnapshot.docs.map(doc => {
                     const obj = doc.data();
@@ -84,8 +90,7 @@ export default class List extends React.Component {
                     </Table>
                     <div>
                         <Button color="primary" tag={Link} to="/create">Create new card</Button>
-    {/*                     <Link to="/create">Create new card</Link>
-    */}                </div>
+                    </div>
                     </Col>
                 </Row>
             </Container>
