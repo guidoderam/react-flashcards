@@ -11,6 +11,7 @@ export default class Create extends React.Component {
             answer: '',
             id: '',
             readmore: '',
+            isPublic: true,
             tags: [],
             validate: {
                 question: '',
@@ -39,6 +40,7 @@ export default class Create extends React.Component {
         const answer = this.state.answer;
         const readmore = this.state.readmore;
         const tags = [this.state.tag];
+        const isPublic = this.state.isPublic;
         const user = this.props.user.uid;
 
         if (question.length === 0 ||
@@ -51,6 +53,7 @@ export default class Create extends React.Component {
             question,
             answer,
             readmore,
+            isPublic,
             tags,
             user
         };
@@ -98,7 +101,7 @@ export default class Create extends React.Component {
     }
 
     render() {
-        const {question, answer, readmore, tag} = this.state;
+        const {question, answer, readmore, isPublic, tag} = this.state;
         return (
             <Container>
                 <Row>
@@ -133,7 +136,7 @@ export default class Create extends React.Component {
                                             onBlur={ (e) => this.validateUrl(e)} />
                             <FormText color="muted">
                                 Link to a page where the reader can find more information about the card's subject
-                            </FormText>          
+                            </FormText>
                             <FormFeedback>Read more needs to be a valid URL</FormFeedback>
                         </FormGroup>
                         <FormGroup>
@@ -145,7 +148,15 @@ export default class Create extends React.Component {
                                 <option value="node">NodeJS</option>
                                 <option value="express">Express</option>
                             </Input>
-                            
+                        </FormGroup>
+                        <FormGroup check className="mb-3">
+                            <Label check>
+                                <Input type="checkbox" name="isPublic" checked={isPublic} onChange={(e) => this.handleChange(e)} />
+                                Public
+                            </Label>
+                            <FormText color="muted">
+                                Public cards are visible to everyone
+                            </FormText>
                         </FormGroup>
                         <Button color="primary">Submit</Button>
                     </Form>

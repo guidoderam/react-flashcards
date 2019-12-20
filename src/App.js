@@ -55,29 +55,13 @@ class App extends React.Component {
               <Route path="/edit/:id"
                 render={(props) => <Edit {...props} user={this.state.user}/>}
               />
-              <Route path="/create">
-                <Create user={this.state.user} />
-              </Route>
+              <Route path="/create/"
+                render={(props) => <Create {...props} user={this.state.user}/>}
+              />
               <Route path="/">
                 <FlashcardContainer user={this.state.user} />
               </Route>
             </Switch>
-            {/* <img src={logo} className="App-logo" alt="logo" /> */}
-{/*             {
-              this.state.user
-                ? <p>Hello, {this.state.user.displayName}</p>
-                : <p>Please sign in.</p>
-            }
-            {
-              this.state.user
-                ? <button onClick={this.signOut}>Sign out</button>
-                : <button onClick={this.signIn}>Sign in with Google</button>
-            } */}
-
-
-            {/* A <Switch> looks through its children <Route>s and
-                renders the first one that matches the current URL. */}
-
           </main>
         </Router>
       </>

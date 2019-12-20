@@ -43,10 +43,11 @@ export default class List extends React.Component {
 
                 if (data && data.length > 0) {
                     const cards = data.map((card) =>
-                        <tr key={card.id}> 
+                        <tr key={card.id}>
                             <td>{card.question}</td>
                             <td>{card.answer}</td>
                             <td>{card.readmore}</td>
+                            <td>{card.isPublic ? 'X' : ''}</td>
                             <td data-card={card.id} onClick={this.handleDelete}>Delete</td>
                             <td>
                                 <Link to={`/edit/${card.id}`}>Edit</Link>
@@ -72,6 +73,7 @@ export default class List extends React.Component {
                                 <th>Question</th>
                                 <th>Answer</th>
                                 <th>Read more</th>
+                                <th>Public</th>
                                 <th>Delete</th>
                                 <th>Edit</th>
                             </tr>

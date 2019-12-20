@@ -11,6 +11,7 @@ export default class Create extends React.Component {
             answer: '',
             id: '',
             readmore: '',
+            isPublic: false,
             tags: [],
             validate: {
                 question: '',
@@ -38,6 +39,7 @@ export default class Create extends React.Component {
                         id: card.id,
                         question: data.question,
                         answer: data.answer,
+                        isPublic: !!data.isPublic,
                         tags: data.tags
                     });
                 }
@@ -68,6 +70,7 @@ export default class Create extends React.Component {
             question: this.state.question,
             answer: this.state.answer,
             readmore: this.state.readmore,
+            isPublic: this.state.isPublic,
             tags: [this.state.tag],
             user: this.props.user.uid
         };
@@ -112,7 +115,7 @@ export default class Create extends React.Component {
     }
 
     render() {
-        const {question, answer, readmore, tag} = this.state;
+        const {question, answer, readmore, isPublic, tag} = this.state;
         return (
             <Container>
                 <Row>
@@ -150,17 +153,26 @@ export default class Create extends React.Component {
                             </FormText>          
                             <FormFeedback>Read more needs to be a valid URL</FormFeedback>
                         </FormGroup>
-                            <FormGroup>
-                                <Label for="tag">Tag</Label>
-                                <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
-                                <option value="css">CSS</option>
-                                    <option value="react">ReactJS</option>
-                                    <option value="js">JS</option>
-                                    <option value="node">NodeJS</option>
-                                    <option value="express">Express</option>
-                                </Input>
-                            </FormGroup>
-                            <Button color="primary">Submit</Button>
+                        <FormGroup>
+                            <Label for="tag">Tag</Label>
+                            <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
+                            <option value="css">CSS</option>
+                                <option value="react">ReactJS</option>
+                                <option value="js">JS</option>
+                                <option value="node">NodeJS</option>
+                                <option value="express">Express</option>
+                            </Input>
+                        </FormGroup>
+                        <FormGroup check className="mb-3">
+                            <Label check>
+                                <Input type="checkbox" name="isPublic" checked={isPublic} onChange={(e) => this.handleChange(e)} />
+                                Public
+                            </Label>
+                            <FormText color="muted">
+                                Public cards are visible to everyone
+                            </FormText>
+                        </FormGroup>
+                        <Button color="primary">Submit</Button>
                         </Form>
                     </Col>
                 </Row>
