@@ -1,4 +1,5 @@
 import React from 'react';
+import RichTextEditor from 'react-rte';
 import {db} from "../../firebase.js";
 import { Container, Row, Col, Button, Form, FormGroup, Label, Input, FormText, FormFeedback } from 'reactstrap';
 
@@ -7,8 +8,8 @@ export default class Create extends React.Component {
         super(props);
         this.state = {
             tag: '',
-            question: '',
-            answer: '',
+            question: RichTextEditor.createEmptyValue(),
+            answer: RichTextEditor.createEmptyValue(),
             id: '',
             readmore: '',
             isPublic: true,
@@ -20,6 +21,7 @@ export default class Create extends React.Component {
             }
         };
 
+        this.onEditorChange = editorState => this.setState({answer: editorState});
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -33,11 +35,19 @@ export default class Create extends React.Component {
         });
     }
 
+    handleQuestionChange = (value) => {
+        this.setState({ question: value });
+    }
+
+    handleAnswerChange = (value) => {
+        this.setState({ answer: value });
+    }
+
     handleSubmit(event) {
         event.preventDefault();
 
-        const question = this.state.question;
-        const answer = this.state.answer;
+        const question = this.state.question.toString('html');
+        const answer = this.state.answer.toString('html');
         const readmore = this.state.readmore;
         const tags = [this.state.tag];
         const isPublic = this.state.isPublic;
@@ -61,8 +71,8 @@ export default class Create extends React.Component {
         db.collection("cards").add(newCard)
             .then((docRef) => {
                 this.setState({
-                    question: '',
-                    answer: '',
+                    question: RichTextEditor.createEmptyValue(),
+                    answer: RichTextEditor.createEmptyValue(),
                     readmore: ''
                 });
                 this.props.history.push('/list');
@@ -110,20 +120,16 @@ export default class Create extends React.Component {
                     <Form onSubmit={ (e) => this.handleSubmit(e) }>
                         <FormGroup>
                             <Label for="question">Question</Label>
-                            <Input type="text" name="question" id="question" 
-                                            valid={ this.state.validate.question === 'has-success' }
-                                            invalid={ this.state.validate.question === 'has-danger' }
-                                            value={question} onChange={ (e) => {this.validateTextRequired(e)
-                                                                                this.handleChange(e) }} />
+                            <RichTextEditor
+                                value={question}
+                                onChange={this.handleQuestionChange}/>   
                             <FormFeedback>Question cannot be empty</FormFeedback>
                         </FormGroup>
                         <FormGroup>
                             <Label for="answer">Answer</Label>
-                            <Input type="textarea" name="answer" id="answer"
-                                            valid={ this.state.validate.answer === 'has-success' }
-                                            invalid={ this.state.validate.answer === 'has-danger' }
-                                            value={answer} onChange={ (e) => { this.validateTextRequired(e)
-                                                                                this.handleChange(e) }} />
+                            <RichTextEditor
+                                value={answer}
+                                onChange={this.handleAnswerChange}/>  
                             <FormFeedback>Answer cannot be empty</FormFeedback>
                         </FormGroup>
                         <FormGroup>

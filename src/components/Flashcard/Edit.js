@@ -1,5 +1,6 @@
 import React from 'react';
 import {db} from "../../firebase.js";
+import RichTextEditor from 'react-rte';
 import { Container, Col, Row, Button, Form, FormGroup, Label, Input, FormText, FormFeedback } from 'reactstrap';
 
 export default class Create extends React.Component {
@@ -7,8 +8,8 @@ export default class Create extends React.Component {
         super(props);
         this.state = {
             tag: '',
-            question: '',
-            answer: '',
+            question: RichTextEditor.createEmptyValue(),
+            answer: RichTextEditor.createEmptyValue(),
             id: '',
             readmore: '',
             isPublic: false,
@@ -37,8 +38,8 @@ export default class Create extends React.Component {
                     const data = card.data();
                     this.setState({
                         id: card.id,
-                        question: data.question,
-                        answer: data.answer,
+                        question: RichTextEditor.createValueFromString(data.question, 'html'),
+                        answer: RichTextEditor.createValueFromString(data.answer, 'html'),
                         isPublic: !!data.isPublic,
                         tags: data.tags
                     });
@@ -58,6 +59,14 @@ export default class Create extends React.Component {
         });
     }
 
+    handleQuestionChange = (value) => {
+        this.setState({ question: value });
+    }
+
+    handleAnswerChange = (value) => {
+        this.setState({ answer: value });
+    }
+
     handleSubmit(event) {
         event.preventDefault();
 
@@ -67,8 +76,8 @@ export default class Create extends React.Component {
         }
 
         const updatedCard = {
-            question: this.state.question,
-            answer: this.state.answer,
+            question: this.state.question.toString('html'),
+            answer: this.state.answer.toString('html'),
             readmore: this.state.readmore,
             isPublic: this.state.isPublic,
             tags: [this.state.tag],
@@ -124,21 +133,17 @@ export default class Create extends React.Component {
                         <Form onSubmit={ (e) => this.handleSubmit(e) }>
                             <FormGroup>
                                 <Label for="question">Question</Label>
-                                <Input type="text" name="question" id="question" 
-                                                valid={ this.state.validate.question === 'has-success' }
-                                                invalid={ this.state.validate.question === 'has-danger' }
-                                                value={question} onChange={ (e) => {this.validateTextRequired(e)
-                                                                                    this.handleChange(e) }} />
+                                <RichTextEditor
+                                    value={question}
+                                    onChange={this.handleQuestionChange}/>  
                                 <FormFeedback>Question cannot be empty</FormFeedback>
                             </FormGroup>
                             <FormGroup>
                                 <Label for="answer">Answer</Label>
-                                <Input type="textarea" name="answer" id="answer"
-                                                valid={ this.state.validate.answer === 'has-success' }
-                                                invalid={ this.state.validate.answer === 'has-danger' }
-                                                value={answer} onChange={ (e) => { this.validateTextRequired(e)
-                                                                                    this.handleChange(e) }} />
-                                <FormFeedback>Answer cannot be empty</FormFeedback>
+                                <RichTextEditor
+                                    value={answer}
+                                    onChange={this.handleAnswerChange}/>                                
+                            <FormFeedback>Answer cannot be empty</FormFeedback>
                             </FormGroup>
                             <FormGroup>
                             <Label for="readmore">Read more</Label>

@@ -6,6 +6,7 @@ import {
     Link
   } from "react-router-dom";
   import { auth } from './../../firebase.js'
+import truncate from 'truncate-html';
 
 export default class List extends React.Component {
     constructor(props) {
@@ -50,9 +51,9 @@ export default class List extends React.Component {
                 if (data && data.length > 0) {
                     const cards = data.map((card) =>
                         <tr key={card.id}>
-                            <td>{card.question}</td>
-                            <td>{card.answer}</td>
-                            <td>{card.readmore}</td>
+                            <td>{truncate(card.question, 70, {stripTags: true})}</td>
+                            <td>{truncate(card.answer, 70, {stripTags: true})}</td>
+                            <td>{truncate(card.readmore, 15)}</td>
                             <td>{card.isPublic ? 'X' : ''}</td>
                             <td data-card={card.id} onClick={this.handleDelete}>Delete</td>
                             <td>
