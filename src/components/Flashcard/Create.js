@@ -26,6 +26,24 @@ export default class Create extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    componentDidMount() {
+        this.getTags();
+    }
+
+    getTags = () => {
+        db.collection("tags")
+            .get()
+            .then(querySnapshot => {
+                const tags = querySnapshot.docs.map(doc => {
+                    return {id: doc.id, ...doc.data()}
+                });
+
+                if (tags && tags.length > 0) {
+                    this.setState({tags});
+                }
+            });
+    }
+
     handleChange = async (event) => {
         const { target } = event;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -112,6 +130,9 @@ export default class Create extends React.Component {
 
     render() {
         const {question, answer, readmore, isPublic, tag} = this.state;
+        const tags = this.state.tags.map(tag => 
+            <option key={tag.id} id={tag.id}>{tag.name}</option>
+        );
         return (
             <Container>
                 <Row>
@@ -149,10 +170,7 @@ export default class Create extends React.Component {
                             <Label for="tag">Tag</Label>
                             <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
                             <option value="css">CSS</option>
-                                <option value="react">ReactJS</option>
-                                <option value="js">JS</option>
-                                <option value="node">NodeJS</option>
-                                <option value="express">Express</option>
+                                {tags.length > 0 ? tags : null}
                             </Input>
                         </FormGroup>
                         <FormGroup check className="mb-3">

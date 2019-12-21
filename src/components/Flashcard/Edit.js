@@ -26,8 +26,11 @@ export default class Create extends React.Component {
     }
 
     componentDidMount() {
-        // todo: get tags from db
-        //this.getTags();
+        if (!this.props.match.params.id) {
+            return;
+        }
+
+        this.getTags();
         this.getCard(this.props.match.params.id);
     }
 
@@ -41,12 +44,31 @@ export default class Create extends React.Component {
                         question: RichTextEditor.createValueFromString(data.question, 'html'),
                         answer: RichTextEditor.createValueFromString(data.answer, 'html'),
                         isPublic: !!data.isPublic,
-                        tags: data.tags
+                        tag: data.tags.length > 0 ? data.tags[0] : ''
                     });
                 }
             })
             .catch(function (error) {
                 console.error("Error getting document: ", error);
+            });
+    }
+
+    getTags = () => {
+        db.collection("tags")
+            .get()
+            .then(querySnapshot => {
+                const tags = querySnapshot.docs.map(doc => {
+                    return {id: doc.id, ...doc.data()}
+                });
+/*                 const tags = querySnapshot.docs.map(doc => {
+                    const obj = doc.data();
+                    obj.id = doc.id;
+                    return obj;
+                }); */
+
+                if (tags && tags.length > 0) {
+                    this.setState({tags});
+                }
             });
     }
 
@@ -125,6 +147,9 @@ export default class Create extends React.Component {
 
     render() {
         const {question, answer, readmore, isPublic, tag} = this.state;
+        const tags = this.state.tags.map(tag => 
+            <option key={tag.id} id={tag.id}>{tag.name}</option>
+        );
         return (
             <Container>
                 <Row>
@@ -159,14 +184,10 @@ export default class Create extends React.Component {
                             <FormFeedback>Read more needs to be a valid URL</FormFeedback>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="tag">Tag</Label>
-                            <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
-                            <option value="css">CSS</option>
-                                <option value="react">ReactJS</option>
-                                <option value="js">JS</option>
-                                <option value="node">NodeJS</option>
-                                <option value="express">Express</option>
-                            </Input>
+                        <Label for="tag">Category</Label>
+                        <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
+                            {tags.length > 0 ? tags : null}
+                        </Input>
                         </FormGroup>
                         <FormGroup check className="mb-3">
                             <Label check>
