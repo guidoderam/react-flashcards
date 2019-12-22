@@ -60,7 +60,6 @@ nav.navbar {
   flex-direction: column;
   justify-content: center;
   font-size: 5vw;
-  padding: 10px;
 }
 
 .flip-card-front {
@@ -80,21 +79,22 @@ nav.navbar {
   align-self: center;
 }
 
+.flip-card .flip-card-content {
+  display: flex;
+  height: 100%;
+  padding: 10px;
+}
+
 .answer {
   margin: auto;
 }
 
 .rating {
   width: 100%;
-  margin-bottom: 5px;
-  unicode-bidi: bidi-override;
-  direction: rtl;
 }
 
 .rating span:hover {
-  color: yellow;
-  font-size: 10rem;
-  transition: font-size 0.4s ease; 
+  color: black;
 }
 
 .rating span:hover ~ span {

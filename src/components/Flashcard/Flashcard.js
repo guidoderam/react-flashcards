@@ -24,10 +24,14 @@ export default class Flashcard extends React.Component  {
       <div className="flip-card" onClick={this.handleClick}>
         <div className="flip-card-inner" className={this.state.flipped ? 'flip-card-inner flipped' : 'flip-card-inner' }>
           <div className="flip-card-front">
-            <Question question={this.props.question} />
+            <div className="flip-card-content">
+              <Question question={this.props.question} />
+            </div>
           </div>
           <div className="flip-card-back">
-            <Answer answer={this.props.answer} onClick={this.props.onRatingClick} />
+            <div className="flip-card-content">
+              <Answer answer={this.props.answer} onClick={this.props.onRatingClick} />
+            </div>
             <Rating onClick={this.props.onRatingClick} />
           </div>
         </div>
