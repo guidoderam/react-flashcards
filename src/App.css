@@ -11,15 +11,21 @@ nav.navbar {
   margin-top: 15px;
 }
 
-.tags .badge {
-  margin-right: 5px;
-  height: 30px;
-  padding: 8px;
-  font-size: 1rem;
+.tags .col {
+  margin-bottom: 24px;
+  padding: 0 6px;
+  flex-basis: 0;
+  flex-grow: 0;
 }
 
-.tags .badge:hover {
-  cursor: pointer;
+.tags .col button {
+  font-size: 1.2rem;
+  min-width: 60px;
+}
+
+.btn-start {
+  width: 100%;
+  font-size: 2rem;;
 }
 
 .flip-card {

@@ -2,14 +2,14 @@ import React from 'react';
 import Flashcard from './Flashcard';
 import Tags from './Tags';
 import {db} from "../../firebase.js";
-import { Badge, Container, Row, Col, Button } from 'reactstrap';
+import { Card, CardTitle, CardBody, Container, Row, Col, Button } from 'reactstrap';
 
 export default class FlashcardContainer extends React.Component  {
   constructor(props) {
     super(props);
     this.state = {
         state: 'initial', // states are: initial, inprogress, end
-        selectedTags: [],
+        selectedCategories: [],
         currentCardIndex: 0,
         cards: [<Flashcard
           key={0}
@@ -22,8 +22,8 @@ export default class FlashcardContainer extends React.Component  {
 
   getFlashcards = () => {
     let query = db.collection("Cards");
-    if (this.state.selectedTags.length > 0) {
-        query = query.where('tags', 'array-contains-any', this.state.selectedTags);
+    if (this.state.selectedCategories.length > 0) {
+        query = query.where('tags', 'array-contains-any', this.state.selectedCategories);
     }
     query.get()
     .then(querySnapshot => {
@@ -49,21 +49,16 @@ export default class FlashcardContainer extends React.Component  {
     });
   }
 
-  handleTagClick = selected => {
-    console.log(`You selected: ${selected}`);
-    const selectedTags = this.state.selectedTags;
-    const index = selectedTags.indexOf(selected);
+  handleCategoryBtnClick = (selected) => {
+    const index = this.state.selectedCategories.indexOf(selected);
+    const selectedCategories = this.state.selectedCategories;
     if (index < 0) {
-      selectedTags.push(selected);
+      selectedCategories.push(selected);
     } else {
-      selectedTags.splice(index, 1);
+      selectedCategories.splice(index, 1);
     }
 
-    this.setState({
-      selectedTags: selectedTags
-    });
-
-    console.log(this.state.selectedTags);
+    this.setState({selectedCategories})
   }
 
   getTags = () => {
@@ -77,20 +72,8 @@ export default class FlashcardContainer extends React.Component  {
         });
         
         if (data && data.length > 0) {
-            const tags = data.map((tag) =>
-                /* todo: fix color switching */
-                <Badge color={this.state.selectedTags.includes(tag.name) ? 'primary' : 'secondary'}
-                    key={tag.id}
-                    id={tag.id}
-                    name={tag.name}
-                    onClick={() => this.handleTagClick(tag.name)}>
-                  {tag.name}
-                </Badge>
-            );
 
-            this.setState(state => (
-              {tags: state.tags.concat(tags)}
-            ));
+            this.setState({tags: data});
         }
     });
   }
@@ -180,14 +163,14 @@ export default class FlashcardContainer extends React.Component  {
                   <p>Pick a category to start a new round.</p>
                 </Col>
               </Row>
+              <Card>
+                <CardBody>
+                  <Tags tags={this.state.tags} onClick={this.handleCategoryBtnClick} selected={this.state.selectedCategories} />
+                </CardBody>
+              </Card>
               <Row>
-                <Col>
-                  <Tags tags={this.state.tags} />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Button color="primary" onClick={this.handleStartClick} disabled={this.state.startButtonDisabled}>
+                <Col xs="12">
+                  <Button className="btn-start" color="primary" onClick={this.handleStartClick} disabled={this.state.startButtonDisabled}>
                       Start
                   </Button>
                 </Col>
