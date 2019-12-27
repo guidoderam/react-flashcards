@@ -75,7 +75,7 @@ export default class Create extends React.Component {
             answer.length === 0 ||
             !user) {
             return;
-        }
+        }   
 
         const newCard = {
             question,
@@ -85,6 +85,8 @@ export default class Create extends React.Component {
             tags,
             user
         };
+
+        this.props.onLoading(true);
 
         db.collection("cards").add(newCard)
             .then((docRef) => {
@@ -97,7 +99,8 @@ export default class Create extends React.Component {
             })
             .catch(function (error) {
                 console.error("Error adding document: ", error);
-            });
+            })
+            .finally(this.props.onLoading(false));
     }
 
     validateTextRequired(e) {

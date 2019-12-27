@@ -30,12 +30,15 @@ export default class Create extends React.Component {
             return;
         }
 
-        this.getTags();
-        this.getCard(this.props.match.params.id);
+        this.props.onLoading(true);
+
+        this.getTags()
+        .then(this.getCard(this.props.match.params.id))
+        .finally(this.props.onLoading(false));
     }
 
     getCard = (id) => {
-        db.collection("cards").doc(id).get()
+        return db.collection("cards").doc(id).get()
             .then((card) => {
                 if (card.exists) {
                     const data = card.data();
@@ -54,17 +57,12 @@ export default class Create extends React.Component {
     }
 
     getTags = () => {
-        db.collection("tags")
+        return db.collection("tags")
             .get()
             .then(querySnapshot => {
                 const tags = querySnapshot.docs.map(doc => {
                     return {id: doc.id, ...doc.data()}
                 });
-/*                 const tags = querySnapshot.docs.map(doc => {
-                    const obj = doc.data();
-                    obj.id = doc.id;
-                    return obj;
-                }); */
 
                 if (tags && tags.length > 0) {
                     this.setState({tags});
@@ -97,6 +95,8 @@ export default class Create extends React.Component {
             return;
         }
 
+        this.props.onLoading(true);
+
         const updatedCard = {
             question: this.state.question.toString('html'),
             answer: this.state.answer.toString('html'),
@@ -114,7 +114,8 @@ export default class Create extends React.Component {
             })
             .catch((error) => {
                 console.error("Error adding document: ", error);
-            });
+            })
+            .finally(this.props.onLoading(false));
     }
 
     validateTextRequired(e) {

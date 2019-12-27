@@ -2,7 +2,7 @@ import React from 'react';
 import Flashcard from './Flashcard';
 import Tags from './Tags';
 import {db} from "../../firebase.js";
-import { Card, CardTitle, CardBody, Container, Row, Col, Button } from 'reactstrap';
+import { Card, CardBody, Container, Row, Col, Button } from 'reactstrap';
 
 export default class FlashcardContainer extends React.Component  {
   constructor(props) {
@@ -21,6 +21,8 @@ export default class FlashcardContainer extends React.Component  {
   }
 
   getFlashcards = () => {
+    this.props.onLoading(true)
+
     let query = db.collection("Cards");
     if (this.state.selectedCategories.length > 0) {
         query = query.where('tags', 'array-contains-any', this.state.selectedCategories);
@@ -46,7 +48,8 @@ export default class FlashcardContainer extends React.Component  {
                 state: 'inprogress'
             }));
         }
-    });
+    })
+    .finally(() => this.props.onLoading(false));
   }
 
   handleCategoryBtnClick = (selected) => {
@@ -62,6 +65,7 @@ export default class FlashcardContainer extends React.Component  {
   }
 
   getTags = () => {
+    this.props.onLoading(true);
     db.collection("tags")
     .get()
     .then(querySnapshot => {
@@ -75,7 +79,8 @@ export default class FlashcardContainer extends React.Component  {
 
             this.setState({tags: data});
         }
-    });
+    })
+    .finally(() => this.props.onLoading(false));
   }
 
   componentDidMount() {

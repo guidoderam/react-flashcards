@@ -52,6 +52,7 @@ export default class List extends React.Component {
     }
 
     getCards = (user) => {
+        this.props.onLoading(true);
         let query = db.collection("cards");
         query.where("user", "==", user)
             .get()
@@ -67,7 +68,8 @@ export default class List extends React.Component {
                         cards: data
                     }));
                 }
-            });
+            })
+            .finally(() => this.props.onLoading(false));
     }
 
     render() {
