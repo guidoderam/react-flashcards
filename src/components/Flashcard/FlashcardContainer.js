@@ -23,7 +23,7 @@ export default class FlashcardContainer extends React.Component  {
   getFlashcards = () => {
     this.props.onLoading(true)
 
-    let query = db.collection("Cards");
+    let query = db.collection("cards");
     if (this.state.selectedCategories.length > 0) {
         query = query.where('tags', 'array-contains-any', this.state.selectedCategories);
     }
@@ -104,12 +104,12 @@ export default class FlashcardContainer extends React.Component  {
 
   saveRating = (cardId, value) => {
      const rating = {
-        user: this.props.user.uid,
-        value: value
+        value: Number(value),
+        created: new Date()
     };
 
-    const cardDocRef = db.collection("Cards").doc(cardId);
-    cardDocRef.collection('ratings').add(rating)
+    const cardDocRef = db.collection("cards").doc(cardId);
+    cardDocRef.collection('users').doc(this.props.user.uid).collection('ratings').add(rating)
     .then(function(docRef) {
         console.log("Document written with ID: ", docRef.id);
     })
