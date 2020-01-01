@@ -7,13 +7,12 @@ export default class Create extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tag: '',
+            category: '',
             question: RichTextEditor.createEmptyValue(),
             answer: RichTextEditor.createEmptyValue(),
             id: '',
             readmore: '',
-            isPublic: true,
-            tags: [],
+            categories: [],
             validate: {
                 question: '',
                 answer: '',
@@ -27,19 +26,19 @@ export default class Create extends React.Component {
     }
 
     componentDidMount() {
-        this.getTags();
+        this.getCategories();
     }
 
-    getTags = () => {
+    getCategories = () => {
         db.collection("tags")
             .get()
             .then(querySnapshot => {
-                const tags = querySnapshot.docs.map(doc => {
+                const categories = querySnapshot.docs.map(doc => {
                     return {id: doc.id, ...doc.data()}
                 });
 
-                if (tags && tags.length > 0) {
-                    this.setState({tags});
+                if (categories && categories.length > 0) {
+                    this.setState({categories});
                 }
             });
     }
@@ -67,13 +66,10 @@ export default class Create extends React.Component {
         const question = this.state.question.toString('html');
         const answer = this.state.answer.toString('html');
         const readmore = this.state.readmore;
-        const tags = [this.state.tag];
-        const isPublic = this.state.isPublic;
-        const user = this.props.user.uid;
+        const category = this.state.category;
 
         if (question.length === 0 ||
-            answer.length === 0 ||
-            !user) {
+            answer.length === 0) {
             return;
         }   
 
@@ -81,15 +77,14 @@ export default class Create extends React.Component {
             question,
             answer,
             readmore,
-            isPublic,
-            tags,
-            user
+            category,
+            new: true
         };
 
         this.props.onLoading(true);
 
-        db.collection("cards").add(newCard)
-            .then((docRef) => {
+        db.collection('users').doc(this.props.user.uid).collection("cards").add(newCard)
+            .then(() => {
                 this.setState({
                     question: RichTextEditor.createEmptyValue(),
                     answer: RichTextEditor.createEmptyValue(),
@@ -132,9 +127,9 @@ export default class Create extends React.Component {
     }
 
     render() {
-        const {question, answer, readmore, isPublic, tag} = this.state;
-        const tags = this.state.tags.map(tag => 
-            <option key={tag.id} id={tag.id}>{tag.name}</option>
+        const {question, answer, readmore, category} = this.state;
+        const categories = this.state.categories.map(category => 
+            <option key={category.id} id={category.id}>{category.name}</option>
         );
         return (
             <Container>
@@ -170,20 +165,10 @@ export default class Create extends React.Component {
                             <FormFeedback>Read more needs to be a valid URL</FormFeedback>
                         </FormGroup>
                         <FormGroup>
-                            <Label for="tag">Tag</Label>
-                            <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
-                            <option value="css">CSS</option>
-                                {tags.length > 0 ? tags : null}
+                            <Label for="category">Category</Label>
+                            <Input type="select" name="category" id="category" value={category} onChange={ (e) => this.handleChange(e) }>
+                                {categories.length > 0 ? categories : null}
                             </Input>
-                        </FormGroup>
-                        <FormGroup check className="mb-3">
-                            <Label check>
-                                <Input type="checkbox" name="isPublic" checked={isPublic} onChange={(e) => this.handleChange(e)} />
-                                Public
-                            </Label>
-                            <FormText color="muted">
-                                Public cards are visible to everyone
-                            </FormText>
                         </FormGroup>
                         <Button color="primary">Submit</Button>
                     </Form>

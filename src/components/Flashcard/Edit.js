@@ -7,13 +7,12 @@ export default class Create extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tag: '',
+            category: '',
             question: RichTextEditor.createEmptyValue(),
             answer: RichTextEditor.createEmptyValue(),
             id: '',
             readmore: '',
-            isPublic: false,
-            tags: [],
+            categories: [],
             validate: {
                 question: '',
                 answer: '',
@@ -32,13 +31,13 @@ export default class Create extends React.Component {
 
         this.props.onLoading(true);
 
-        this.getTags()
+        this.getCategories()
         .then(this.getCard(this.props.match.params.id))
         .finally(this.props.onLoading(false));
     }
 
     getCard = (id) => {
-        return db.collection("cards").doc(id).get()
+        return db.collection("users").doc(this.props.user.uid).collection("cards").doc(id).get()
             .then((card) => {
                 if (card.exists) {
                     const data = card.data();
@@ -46,8 +45,7 @@ export default class Create extends React.Component {
                         id: card.id,
                         question: RichTextEditor.createValueFromString(data.question, 'html'),
                         answer: RichTextEditor.createValueFromString(data.answer, 'html'),
-                        isPublic: !!data.isPublic,
-                        tag: data.tags.length > 0 ? data.tags[0] : ''
+                        category: data.category
                     });
                 }
             })
@@ -56,16 +54,16 @@ export default class Create extends React.Component {
             });
     }
 
-    getTags = () => {
+    getCategories = () => {
         return db.collection("tags")
             .get()
             .then(querySnapshot => {
-                const tags = querySnapshot.docs.map(doc => {
+                const categories = querySnapshot.docs.map(doc => {
                     return {id: doc.id, ...doc.data()}
                 });
 
-                if (tags && tags.length > 0) {
-                    this.setState({tags});
+                if (categories && categories.length > 0) {
+                    this.setState({categories});
                 }
             });
     }
@@ -101,13 +99,11 @@ export default class Create extends React.Component {
             question: this.state.question.toString('html'),
             answer: this.state.answer.toString('html'),
             readmore: this.state.readmore,
-            isPublic: this.state.isPublic,
-            tags: [this.state.tag],
-            user: this.props.user.uid
+            category: this.state.category
         };
 
         // todo: use a transaction instead
-        db.collection("cards").doc(this.state.id).update(updatedCard)
+        db.collection("users").doc(this.props.user.uid).collection("cards").doc(this.state.id).update(updatedCard)
             .then((docRef) => {
                 //console.log("Document written with ID: ", docRef.id);
                 this.props.history.push('/list');
@@ -147,9 +143,9 @@ export default class Create extends React.Component {
     }
 
     render() {
-        const {question, answer, readmore, isPublic, tag} = this.state;
-        const tags = this.state.tags.map(tag => 
-            <option key={tag.id} id={tag.id}>{tag.name}</option>
+        const {question, answer, readmore, category} = this.state;
+        const categories = this.state.categories.map(category => 
+            <option key={category.id} id={category.id}>{category.name}</option>
         );
         return (
             <Container>
@@ -185,19 +181,10 @@ export default class Create extends React.Component {
                             <FormFeedback>Read more needs to be a valid URL</FormFeedback>
                         </FormGroup>
                         <FormGroup>
-                        <Label for="tag">Category</Label>
-                        <Input type="select" name="tag" id="tag" value={tag} onChange={ (e) => this.handleChange(e) }>
-                            {tags.length > 0 ? tags : null}
+                        <Label for="category">Category</Label>
+                        <Input type="select" name="category" id="category" value={category} onChange={ (e) => this.handleChange(e) }>
+                            {categories.length > 0 ? categories : null}
                         </Input>
-                        </FormGroup>
-                        <FormGroup check className="mb-3">
-                            <Label check>
-                                <Input type="checkbox" name="isPublic" checked={isPublic} onChange={(e) => this.handleChange(e)} />
-                                Public
-                            </Label>
-                            <FormText color="muted">
-                                Public cards are visible to everyone
-                            </FormText>
                         </FormGroup>
                         <Button color="primary">Submit</Button>
                         </Form>

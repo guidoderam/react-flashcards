@@ -2,10 +2,8 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
-import { Container } from 'reactstrap';
 import MyNavbar from './components/Navbar'
 import { auth, provider } from './firebase.js'
 import FlashcardContainer from './components/Flashcard/FlashcardContainer';

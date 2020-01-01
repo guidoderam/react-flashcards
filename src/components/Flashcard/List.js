@@ -1,6 +1,5 @@
 import React from 'react';
 import { Table, Button, Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import Tags from './Tags';
 import {db} from "../../firebase.js";
 import {
     Link
@@ -35,7 +34,7 @@ export default class List extends React.Component {
 
     handleDeleteConfirmationClick = () => {
         const cardId = this.state.currentCard;
-        db.collection("cards").doc(cardId).delete().then(() => {
+        db.collection('users').doc(this.props.user.uid).collection("cards").doc(cardId).delete().then(() => {
             this.removeCard(cardId);
             this.toggle();
         }).catch(function(error) {
@@ -53,8 +52,7 @@ export default class List extends React.Component {
 
     getCards = (user) => {
         this.props.onLoading(true);
-        let query = db.collection("cards");
-        query.where("user", "==", user)
+        db.collection('users').doc(user).collection("cards")
             .get()
             .then(querySnapshot => {
                 const data = querySnapshot.docs.map(doc => {
@@ -78,7 +76,6 @@ export default class List extends React.Component {
                 <td>{truncate(card.question, 70, {stripTags: true})}</td>
                 <td>{truncate(card.answer, 70, {stripTags: true})}</td>
                 <td>{truncate(card.readmore, 15)}</td>
-                <td>{card.isPublic ? 'X' : ''}</td>
                 <td>
                     <Link to={`/edit/${card.id}`}><Button color="secondary">Edit</Button></Link>
                 </td>
@@ -99,7 +96,6 @@ export default class List extends React.Component {
                                     <th>Question</th>
                                     <th>Answer</th>
                                     <th>Read more</th>
-                                    <th>Public</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
                                 </tr>

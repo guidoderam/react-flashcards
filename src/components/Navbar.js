@@ -1,10 +1,4 @@
 import React, { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
 import { NavLink as RRNavLink } from 'react-router-dom';
 import {
   Collapse,
@@ -14,10 +8,6 @@ import {
   Nav,
   NavItem,
   NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
 /*   NavbarText */
 } from 'reactstrap';
 
@@ -41,12 +31,12 @@ const MyNavbar = (props) => {
             </Nav>
             <ul className="navbar-nav ml-auto nav-flex-icons">
                 <li className="nav-item avatar dropdown">
-                <a onClick={props.onUserAvatarClick} className="nav-link" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
+                <a href="#" onClick={props.onUserAvatarClick} className="nav-link" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false" style={{cursor: 'pointer'}}>
                     {
                         props.user ?
                         <img src={`${props.user.photoURL}=h50`} className="rounded-circle z-depth-0" alt="avatar"/> :
-                        <img src="/anonymous.png" className="rounded-circle z-depth-0" alt="avatar image"/>
+                        <img src="/anonymous.png" className="rounded-circle z-depth-0" alt="avatar"/>
                     }
                 </a>
 {/*                 <div className="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
