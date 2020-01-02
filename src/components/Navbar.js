@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink as RRNavLink } from 'react-router-dom';
+import { Link, NavLink as RRNavLink } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -19,7 +19,7 @@ const MyNavbar = (props) => {
   return (
     <>
       <Navbar color="light" light expand="md" className="fixed-top">
-        <NavbarBrand href="/">React-Flashcards</NavbarBrand>
+        <Link className="navbar-brand" to="/">React-Flashcards</Link>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
             <Nav className="mr-auto" navbar>
