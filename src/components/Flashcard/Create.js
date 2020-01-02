@@ -38,7 +38,10 @@ export default class Create extends React.Component {
                 });
 
                 if (categories && categories.length > 0) {
-                    this.setState({categories});
+                    this.setState({
+                        categories,
+                        category: this.state.category || categories[0].name,
+                    });
                 }
             });
     }
