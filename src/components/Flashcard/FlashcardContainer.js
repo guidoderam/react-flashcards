@@ -4,7 +4,7 @@ import Tags from './Tags';
 import { db, firebase } from "../../firebase.js";
 import { Card, CardBody, Container, Row, Col, Button } from 'reactstrap';
 
-export default class FlashcardContainer extends React.Component  {
+export default class FlashcardContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,14 +12,14 @@ export default class FlashcardContainer extends React.Component  {
         selectedCategories: [],
         currentCardIndex: 0,
         cards: [],
-        tags: [],
+        tags: null,
         startButtonDisabled: false
     };
   }
 
   getFlashcards = () => {
     this.props.onLoading(true)
-
+    
     let cards = [];
     const category = this.state.selectedCategories[0];
     db.collection('users').doc(this.props.user.uid).collection('cards')
@@ -74,14 +74,25 @@ export default class FlashcardContainer extends React.Component  {
     db.collection("tags")
     .get()
     .then(querySnapshot => {
-        const data = querySnapshot.docs.map(doc => {
+        return querySnapshot.docs.map(doc => {
             return { id: doc.id, ...doc.data() }
         });
-        
-        if (data && data.length > 0) {
+    }).then(categories => {
+      const categoryHasCards = (category) => {
+        return db.collection('users').doc(this.props.user.uid).collection('cards')
+          .where("category", "==", category.name)
+          .limit(1)
+          .get().then((querySnapshot) => {
+            return {hasCards: querySnapshot.docs.length > 0, ...category};
+          });
+      };
 
-            this.setState({tags: data});
-        }
+      Promise.all(categories.map(category => categoryHasCards(category)))
+        .then((categories) => {
+          if (categories && categories.length > 0) {
+            this.setState({tags: categories.filter(x => x.hasCards)});
+          }
+        });
     })
     .finally(() => this.props.onLoading(false));
   }
@@ -225,14 +236,22 @@ export default class FlashcardContainer extends React.Component  {
               <Row>
                 <Col>
                   <h2>Welcome</h2>
-                  <p>Pick a category to start a new round.</p>
+                  {
+                    this.state.tags == null ? <p>Loading...</p> :
+                     (this.state.tags.length > 0 ? <p>You have cards due for these categories.</p> :
+                      <p>There are no cards for you to answer at this moment.</p>)
+                  }
                 </Col>
               </Row>
-              <Card>
+              {
+                this.state.tags ? 
+                <Card>
                 <CardBody>
                   <Tags tags={this.state.tags} onClick={this.handleCategoryBtnClick} selected={this.state.selectedCategories} />
                 </CardBody>
-              </Card>
+                </Card>
+                : null
+              }
               <Row>
                 <Col xs="12">
                   <Button className="btn-start" color="primary" onClick={this.handleStartClick} disabled={this.state.startButtonDisabled}>
