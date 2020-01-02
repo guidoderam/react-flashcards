@@ -81,7 +81,8 @@ export default class Create extends React.Component {
             answer,
             readmore,
             category,
-            new: true
+            new: true,
+            created: new Date()
         };
 
         this.props.onLoading(true);

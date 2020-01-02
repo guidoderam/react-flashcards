@@ -99,7 +99,8 @@ export default class Create extends React.Component {
             question: this.state.question.toString('html'),
             answer: this.state.answer.toString('html'),
             readmore: this.state.readmore,
-            category: this.state.category
+            category: this.state.category,
+            updated: new Date()
         };
 
         // todo: use a transaction instead
