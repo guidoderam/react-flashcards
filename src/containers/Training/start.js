@@ -121,8 +121,6 @@ export default class Start extends React.Component {
       let ef = 2.5;
 
       if (grade < 3) {
-        nextDay.setDate(nextDay.getDate() + interval);
-
         cardRef.update({
           repetition: 1,
           nextDay,
@@ -134,6 +132,8 @@ export default class Start extends React.Component {
             nextDay
           })
         });
+
+        return;
       }
 
       if (card.ef && card.ef < 2.5) {
