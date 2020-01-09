@@ -1,9 +1,9 @@
-import React from 'react';
-import { Col, Row } from 'reactstrap';
+import React from "react";
+import { Col, Row } from "reactstrap";
 
-const Rating = (props) => {
+const Rating = props => {
   return (
-    <Row className="rating" onClick={props.onClick} >
+    <Row className="rating" onClick={props.onClick}>
       <Col className="bg-danger">
         <span id="star-1" className="fa fa-frown-o"></span>
       </Col>
@@ -15,5 +15,5 @@ const Rating = (props) => {
       </Col>
     </Row>
   );
-}
+};
 export default Rating;
