@@ -1,17 +1,15 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
-import MyNavbar from './components/Navbar'
-import { auth, provider } from './firebase.js'
-import FlashcardContainer from './components/Flashcard/FlashcardContainer';
-import List from './components/Flashcard/List';
-import Create from './components/Flashcard/Create';
-import Edit from './components/Flashcard/Edit';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import './App.scss';
+import MyNavbar from './components/Navbar';
 import LoadingOverlay from './components/overlay/LoadingOverlay';
-import './App.css';
+import Home from './containers/Home';
+import Cards from './containers/Cards/';
+import Create from "./containers/Cards/Create";
+import Edit from "./containers/Cards/Edit";
+import Train from "./containers/Training";
+import Start from "./containers/Training/start";
+import { auth, provider } from './firebase.js';
 
 class App extends React.Component {
   constructor(props) {
@@ -50,21 +48,27 @@ class App extends React.Component {
         <LoadingOverlay isLoading={this.state.isLoading} />
         <Router>
           <header>
-            <MyNavbar user={this.state.user} onUserAvatarClick={this.handleOnUserAvatarClick}/>
+              <MyNavbar user={this.state.user} onUserAvatarClick={this.handleOnUserAvatarClick}/>            
           </header>
           <main role="main">
             <Switch>
-              <Route path="/list">
-                <List user={this.state.user} onLoading={this.handleLoading} />
+              <Route exact path="/">
+                <Home/>
               </Route>
-              <Route path="/edit/:id"
-                render={(props) => <Edit {...props} user={this.state.user} onLoading={this.handleLoading} />}
+              <Route exact path="/cards">
+                <Cards onLoading={this.handleLoading} />
+              </Route>
+              <Route exact path="/cards/edit/:id"
+                render={(props) => <Edit {...props} onLoading={this.handleLoading} />}
               />
-              <Route path="/create/"
-                render={(props) => <Create {...props} user={this.state.user} onLoading={this.handleLoading} />}
+              <Route exact path="/cards/create/"
+                render={(props) => <Create {...props} onLoading={this.handleLoading} />}
               />
-              <Route path="/">
-                <FlashcardContainer user={this.state.user} onLoading={this.handleLoading} />
+              <Route exact path="/training"
+                render={(props) => <Train {...props} onLoading={this.handleLoading} />}>
+              </Route>
+              <Route exact path="/training/start/:category?"
+                render={(props) => <Start {...props} onLoading={this.handleLoading} />}>
               </Route>
             </Switch>
           </main>

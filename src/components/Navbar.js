@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link, NavLink as RRNavLink } from 'react-router-dom';
+import { NavLink as RRNavLink } from 'react-router-dom';
 import {
+  Container,
   Collapse,
   Navbar,
   NavbarToggler,
@@ -8,49 +9,38 @@ import {
   Nav,
   NavItem,
   NavLink,
-/*   NavbarText */
 } from 'reactstrap';
 
 const MyNavbar = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
-  const toggle = () => setIsOpen(!isOpen);
+  const toggleNavbar = () => setCollapsed(!collapsed);
 
   return (
-    <>
-      <Navbar color="light" light expand="md" className="fixed-top">
-        <Link className="navbar-brand" to="/">React-Flashcards</Link>
-        <NavbarToggler onClick={toggle} />
-        <Collapse isOpen={isOpen} navbar>
-            <Nav className="mr-auto" navbar>
-              {
-                props.user ?
-                  <NavItem><NavLink tag={RRNavLink} exact to="/list" activeClassName="active">My cards</NavLink></NavItem>
-                : null
-              }
-            </Nav>
-            <ul className="navbar-nav ml-auto nav-flex-icons">
-                <li className="nav-item avatar dropdown">
-                <a href="#" onClick={props.onUserAvatarClick} className="nav-link" id="navbarDropdownMenuLink-55" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false" style={{cursor: 'pointer'}}>
-                    {
-                        props.user ?
-                        <img src={`${props.user.photoURL}=h50`} className="rounded-circle z-depth-0" alt="avatar"/> :
-                        <img src="/anonymous.png" className="rounded-circle z-depth-0" alt="avatar"/>
-                    }
-                </a>
-{/*                 <div className="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
-                    aria-labelledby="navbarDropdownMenuLink-55">
-                    <a className="dropdown-item" href="/">Action</a>
-                    <a className="dropdown-item" href="/">Another action</a>
-                    <a className="dropdown-item" href="/">Something else here</a>
-                </div> */}
-                </li>
-            </ul>
-         {/*  <NavbarText>Simple Text</NavbarText> */}
+    <Navbar color="secondary" dark expand="md" className="pt-3 pb-3 text-uppercase">
+      <Container>
+        <NavbarBrand tag={RRNavLink} to="/">React-Flashcards</NavbarBrand>
+        <NavbarToggler onClick={toggleNavbar} className="mr-2" />
+        <Collapse isOpen={!collapsed} navbar>
+          <Nav navbar className="ml-auto">
+          {
+            props.user ?
+              <>
+              <NavItem><NavLink tag={RRNavLink} exact to="/training" activeClassName="active">Train</NavLink></NavItem>
+              <NavItem>|</NavItem>
+              <NavItem><NavLink tag={RRNavLink} exact to="/cards" activeClassName="active">My cards</NavLink></NavItem>
+              </>
+            : null
+          }
+          <NavItem >
+            <NavLink tag={RRNavLink} to="/" onClick={props.onUserAvatarClick}>
+              { props.user ? "Sign out" : "Sign in" }
+            </NavLink>
+          </NavItem>
+          </Nav>
         </Collapse>
-      </Navbar>
-    </>
+      </Container>
+    </Navbar>
   );
 }
 
