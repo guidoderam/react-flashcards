@@ -41,7 +41,7 @@ export default class Train extends React.Component {
             .collection("users")
             .doc(uid)
             .collection("cards")
-            .where("category", "==", category.name)
+            .where("category", "==", category.id)
             .limit(1)
             .get()
             .then(querySnapshot => {
