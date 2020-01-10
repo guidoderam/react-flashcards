@@ -26,9 +26,9 @@ export default class Train extends React.Component {
     this.setState({ selectedCategories });
   };
 
-  getCategories = uid => {
-    this.props.onLoading(true);
-    db.collection("tags")
+  getCategories = async uid => {
+    return db
+      .collection("tags")
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
@@ -36,28 +36,45 @@ export default class Train extends React.Component {
         });
       })
       .then(categories => {
-        const categoryHasCards = category => {
-          return db
+        const categoryHasCards = async category => {
+          // Check for cards due in this category that have already
+          // been answered
+          const categoryResult = await db
             .collection("users")
             .doc(uid)
             .collection("cards")
             .where("category", "==", category.id)
+            .where("nextDay", "<", new Date())
+            .orderBy("nextDay", "desc")
             .limit(1)
             .get()
             .then(querySnapshot => {
               return { hasCards: querySnapshot.docs.length > 0, ...category };
             });
+
+          // Check for new cards if the previous query
+          // returned no results
+          if (!categoryResult.hasCards) {
+            return db
+              .collection("users")
+              .doc(uid)
+              .collection("cards")
+              .where("category", "==", category.id)
+              .where("new", "==", true)
+              .limit(1)
+              .get()
+              .then(querySnapshot => {
+                return { hasCards: querySnapshot.docs.length > 0, ...category };
+              });
+          }
+
+          return categoryResult;
         };
 
         return Promise.all(
           categories.map(category => categoryHasCards(category))
-        ).then(categories => {
-          if (categories && categories.length > 0) {
-            this.setState({ tags: categories.filter(x => x.hasCards) });
-          }
-        });
-      })
-      .finally(() => this.props.onLoading(false));
+        );
+      });
   };
 
   handleStartClick = e => {
@@ -74,7 +91,14 @@ export default class Train extends React.Component {
   componentDidMount() {
     auth.onAuthStateChanged(user => {
       if (user) {
-        this.getCategories(user.uid);
+        this.props.onLoading(true);
+        this.getCategories(user.uid)
+          .then(categories => {
+            this.setState({ tags: categories.filter(x => x.hasCards) });
+          })
+          .finally(() => {
+            this.props.onLoading(false);
+          });
       }
     });
   }
