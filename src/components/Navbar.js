@@ -37,6 +37,7 @@ const MyNavbar = props => {
                     tag={RRNavLink}
                     exact
                     to="/training"
+                    active={window.location.href.indexOf("/training") !== -1}
                     activeClassName="active"
                   >
                     Train
@@ -48,6 +49,7 @@ const MyNavbar = props => {
                     tag={RRNavLink}
                     exact
                     to="/cards"
+                    active={window.location.href.indexOf("/cards") !== -1}
                     activeClassName="active"
                   >
                     My cards
