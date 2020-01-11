@@ -3,44 +3,22 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
 import MyNavbar from "./components/Navbar";
 import LoadingOverlay from "./components/overlay/LoadingOverlay";
-import Home from "./containers/Home";
 import Cards from "./containers/Cards/";
 import Create from "./containers/Cards/Create";
 import Edit from "./containers/Cards/Edit";
+import Home from "./containers/Home";
+import SignIn from "./containers/SignIn/";
 import Train from "./containers/Training";
 import Start from "./containers/Training/start";
-import { auth, provider } from "./firebase.js";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      user: null,
       isLoading: false
     };
-
-    this.signIn = () => {
-      auth.signInWithPopup(provider);
-    };
-    this.signOut = () => {
-      auth.signOut();
-    };
   }
-
-  componentDidMount() {
-    auth.onAuthStateChanged(user => {
-      this.setState({ user });
-    });
-  }
-
-  handleOnUserAvatarClick = () => {
-    if (this.state.user) {
-      this.signOut();
-    } else {
-      this.signIn();
-    }
-  };
 
   handleLoading = isLoading => {
     this.setState({ isLoading });
@@ -51,16 +29,14 @@ class App extends React.Component {
       <>
         <LoadingOverlay isLoading={this.state.isLoading} />
         <Router>
-          <header>
-            <MyNavbar
-              user={this.state.user}
-              onUserAvatarClick={this.handleOnUserAvatarClick}
-            />
-          </header>
+          <MyNavbar />
           <main role="main">
             <Switch>
               <Route exact path="/">
                 <Home />
+              </Route>
+              <Route exact path="/signin">
+                <SignIn />
               </Route>
               <Route exact path="/cards">
                 <Cards onLoading={this.handleLoading} />

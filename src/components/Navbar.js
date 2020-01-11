@@ -1,23 +1,44 @@
-import React, { useState } from "react";
-import { NavLink as RRNavLink } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useHistory, NavLink as RRNavLink } from "react-router-dom";
 import {
   Container,
   Collapse,
-  Navbar,
+  Navbar as RSNavbar,
   NavbarToggler,
   NavbarBrand,
   Nav,
   NavItem,
   NavLink
 } from "reactstrap";
+import { auth } from "../firebase";
 
-const MyNavbar = props => {
+const Navbar = () => {
   const [collapsed, setCollapsed] = useState(true);
+
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const history = useHistory();
 
   const toggleNavbar = () => setCollapsed(!collapsed);
 
+  const signOut = () => {
+    auth.signOut().then(() => {
+      history.push("/");
+    });
+  };
+
+  useEffect(() => {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        setIsSignedIn(true);
+      } else {
+        setIsSignedIn(false);
+      }
+    });
+  });
+
   return (
-    <Navbar
+    <RSNavbar
       color="secondary"
       dark
       expand="md"
@@ -30,7 +51,7 @@ const MyNavbar = props => {
         <NavbarToggler onClick={toggleNavbar} className="mr-2" />
         <Collapse isOpen={!collapsed} navbar>
           <Nav navbar className="ml-auto">
-            {props.user ? (
+            {isSignedIn ? (
               <>
                 <NavItem>
                   <NavLink
@@ -58,15 +79,21 @@ const MyNavbar = props => {
               </>
             ) : null}
             <NavItem>
-              <NavLink tag={RRNavLink} to="/" onClick={props.onUserAvatarClick}>
-                {props.user ? "Sign out" : "Sign in"}
-              </NavLink>
+              {isSignedIn ? (
+                <NavLink tag={RRNavLink} to="/signout" onClick={signOut}>
+                  Sign Out
+                </NavLink>
+              ) : (
+                <NavLink tag={RRNavLink} to="/signin">
+                  Sign In
+                </NavLink>
+              )}
             </NavItem>
           </Nav>
         </Collapse>
       </Container>
-    </Navbar>
+    </RSNavbar>
   );
 };
 
-export default MyNavbar;
+export default Navbar;
