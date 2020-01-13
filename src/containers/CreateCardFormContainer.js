@@ -10,11 +10,12 @@ import {
   FormFeedback
 } from "reactstrap";
 
-export default class EditCardFormContainer extends React.Component {
+export default class CreateCardFormContainer extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      category: "",
+      deck: props.decks[0].name,
       question: RichTextEditor.createEmptyValue(),
       answer: RichTextEditor.createEmptyValue(),
       id: "",
@@ -34,6 +35,20 @@ export default class EditCardFormContainer extends React.Component {
     await this.setState({
       [name]: value
     });
+  };
+
+  handleDeckChange = async event => {
+    const { target } = event;
+    const { name } = target.value;
+
+    await this.setState(
+      {
+        [name]: target.value
+      },
+      () => {
+        this.props.onDeckChange(target.id);
+      }
+    );
   };
 
   handleQuestionChange = value => {
@@ -79,41 +94,50 @@ export default class EditCardFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    if (this.state.question.length === 0 || this.state.answer.length === 0) {
+    const question = this.state.question.toString("html");
+    const answer = this.state.answer.toString("html");
+    const readmore = this.state.readmore;
+    const deck = this.state.deck;
+
+    if (question.length === 0 || answer.length === 0) {
       return;
     }
 
-    const updatedCard = {
-      question: this.state.question.toString("html"),
-      answer: this.state.answer.toString("html"),
-      readmore: this.state.readmore,
-      category: this.state.category,
-      updated: new Date() // todo: move to container
+    const dateCreated = new Date();
+    const newCard = {
+      question,
+      answer,
+      readmore,
+      deck,
+      new: true,
+      created: dateCreated,
+      updated: dateCreated
     };
 
-    this.props.onSubmit(updatedCard);
-  }
-
-  componentDidMount() {
-    const { id, question, answer, readmore, category } = this.props.card;
-    this.setState({
-      id,
-      question: RichTextEditor.createValueFromString(question, "html"),
-      answer: RichTextEditor.createValueFromString(answer, "html"),
-      category,
-      readmore
-    });
+    this.props.onSubmit(newCard);
   }
 
   render() {
-    const { question, answer, readmore, category } = this.state;
-    const categories = this.props.categories.map(category => (
-      <option key={category.id} id={category.id}>
-        {category.name}
+    const { question, answer, readmore, deck } = this.state;
+    const decks = this.props.decks.map(deck => (
+      <option key={deck.id} id={deck.id}>
+        {deck.name}
       </option>
     ));
     return (
       <Form onSubmit={e => this.handleSubmit(e)}>
+        <FormGroup>
+          <Label for="deck">Deck</Label>
+          <Input
+            type="select"
+            name="deck"
+            id={"deck"}
+            value={deck}
+            onChange={e => this.handleDeckChange(e)}
+          >
+            {decks.length > 0 ? decks : null}
+          </Input>
+        </FormGroup>
         <FormGroup>
           <Label for="question">Question</Label>
           <RichTextEditor
@@ -144,18 +168,6 @@ export default class EditCardFormContainer extends React.Component {
             card's subject
           </FormText>
           <FormFeedback>Read more needs to be a valid URL</FormFeedback>
-        </FormGroup>
-        <FormGroup>
-          <Label for="category">Category</Label>
-          <Input
-            type="select"
-            name="category"
-            id="category"
-            value={category}
-            onChange={e => this.handleChange(e)}
-          >
-            {categories.length > 0 ? categories : null}
-          </Input>
         </FormGroup>
         <Button color="primary">Submit</Button>
       </Form>

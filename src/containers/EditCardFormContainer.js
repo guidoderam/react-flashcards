@@ -10,12 +10,10 @@ import {
   FormFeedback
 } from "reactstrap";
 
-export default class CreateCardFormContainer extends React.Component {
+export default class EditCardFormContainer extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      category: props.categories[0].name,
       question: RichTextEditor.createEmptyValue(),
       answer: RichTextEditor.createEmptyValue(),
       id: "",
@@ -80,36 +78,33 @@ export default class CreateCardFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const question = this.state.question.toString("html");
-    const answer = this.state.answer.toString("html");
-    const readmore = this.state.readmore;
-    const category = this.state.category;
-
-    if (question.length === 0 || answer.length === 0) {
+    if (this.state.question.length === 0 || this.state.answer.length === 0) {
       return;
     }
 
-    const dateCreated = new Date();
-    const newCard = {
-      question,
-      answer,
-      readmore,
-      category,
-      new: true,
-      created: dateCreated,
-      updated: dateCreated
+    const updatedCard = {
+      question: this.state.question.toString("html"),
+      answer: this.state.answer.toString("html"),
+      readmore: this.state.readmore,
+      updated: new Date() // todo: move to container
     };
 
-    this.props.onSubmit(newCard);
+    this.props.onSubmit(updatedCard);
+  }
+
+  componentDidMount() {
+    const { id, question, answer, readmore } = this.props.card;
+    this.setState({
+      id,
+      question: RichTextEditor.createValueFromString(question, "html"),
+      answer: RichTextEditor.createValueFromString(answer, "html"),
+      readmore
+    });
   }
 
   render() {
-    const { question, answer, readmore, category } = this.state;
-    const categories = this.props.categories.map(category => (
-      <option key={category.id} id={category.id}>
-        {category.name}
-      </option>
-    ));
+    const { question, answer, readmore } = this.state;
+
     return (
       <Form onSubmit={e => this.handleSubmit(e)}>
         <FormGroup>
@@ -142,18 +137,6 @@ export default class CreateCardFormContainer extends React.Component {
             card's subject
           </FormText>
           <FormFeedback>Read more needs to be a valid URL</FormFeedback>
-        </FormGroup>
-        <FormGroup>
-          <Label for="category">Category</Label>
-          <Input
-            type="select"
-            name="category"
-            id="category"
-            value={category}
-            onChange={e => this.handleChange(e)}
-          >
-            {categories.length > 0 ? categories : null}
-          </Input>
         </FormGroup>
         <Button color="primary">Submit</Button>
       </Form>

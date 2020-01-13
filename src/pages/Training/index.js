@@ -8,81 +8,83 @@ export default class Train extends React.Component {
     super(props);
 
     this.state = {
-      selectedCategories: [],
-      tags: null,
+      selectedDecks: [],
+      decks: null,
       startButtonDisabled: false
     };
   }
 
-  handleCategoryBtnClick = selected => {
-    const index = this.state.selectedCategories.indexOf(selected);
-    const selectedCategories = this.state.selectedCategories;
+  handleDeckBtnClick = selected => {
+    const index = this.state.selectedDecks.indexOf(selected);
+    const selectedDecks = this.state.selectedDecks;
     if (index < 0) {
-      selectedCategories.push(selected);
+      selectedDecks.push(selected);
     } else {
-      selectedCategories.splice(index, 1);
+      selectedDecks.splice(index, 1);
     }
 
-    this.setState({ selectedCategories });
+    this.setState({ selectedCategories: selectedDecks });
   };
 
-  getCategories = async uid => {
+  getDecks = async uid => {
     return db
-      .collection("tags")
+      .collection("users")
+      .doc(uid)
+      .collection("decks")
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
           return { id: doc.id, ...doc.data() };
         });
       })
-      .then(categories => {
-        const categoryHasCards = async category => {
-          // Check for cards due in this category that have already
+      .then(decks => {
+        const deckHasDueCards = async deck => {
+          // Check for cards due in this deck that have already
           // been answered
-          const categoryResult = await db
+          const deckResult = await db
             .collection("users")
             .doc(uid)
+            .collection("decks")
+            .doc(deck.id)
             .collection("cards")
-            .where("category", "==", category.id)
             .where("nextDay", "<", new Date())
             .orderBy("nextDay", "desc")
             .limit(1)
             .get()
             .then(querySnapshot => {
-              return { hasCards: querySnapshot.docs.length > 0, ...category };
+              return { hasCards: querySnapshot.docs.length > 0, ...deck };
             });
 
           // Check for new cards if the previous query
           // returned no results
-          if (!categoryResult.hasCards) {
+          if (!deckResult.hasCards) {
             return db
               .collection("users")
               .doc(uid)
+              .collection("decks")
+              .doc(deck.id)
               .collection("cards")
-              .where("category", "==", category.id)
               .where("new", "==", true)
               .limit(1)
               .get()
               .then(querySnapshot => {
-                return { hasCards: querySnapshot.docs.length > 0, ...category };
+                return { hasCards: querySnapshot.docs.length > 0, ...deck };
               });
           }
 
-          return categoryResult;
+          return deckResult;
         };
 
-        return Promise.all(
-          categories.map(category => categoryHasCards(category))
-        );
+        return Promise.all(decks.map(deck => deckHasDueCards(deck)));
       });
   };
 
   handleStartClick = e => {
     e.preventDefault();
 
-    if (this.state.selectedCategories.length > 0) {
-      const category = this.state.selectedCategories[0];
-      this.props.history.push(`/training/start/${category}`);
+    if (this.state.selectedDecks.length > 0) {
+      const deck = this.state.selectedDecks[0];
+      this.props.history.push(`/training/start/${deck}`);
     } else {
       this.props.history.push("/training/start");
     }
@@ -92,9 +94,9 @@ export default class Train extends React.Component {
     auth.onAuthStateChanged(user => {
       if (user) {
         this.props.onLoading(true);
-        this.getCategories(user.uid)
-          .then(categories => {
-            this.setState({ tags: categories.filter(x => x.hasCards) });
+        this.getDecks(user.uid)
+          .then(decks => {
+            this.setState({ decks: decks.filter(x => x.hasCards) });
           })
           .finally(() => {
             this.props.onLoading(false);
@@ -109,22 +111,22 @@ export default class Train extends React.Component {
         <Row>
           <Col>
             <h2>Welcome</h2>
-            {this.state.tags == null ? (
+            {this.state.decks == null ? (
               <p>Loading...</p>
-            ) : this.state.tags.length > 0 ? (
+            ) : this.state.decks.length > 0 ? (
               <p>You have cards due for these categories.</p>
             ) : (
               <p>There are no cards for you to answer at this moment.</p>
             )}
           </Col>
         </Row>
-        {this.state.tags ? (
+        {this.state.decks ? (
           <Card>
             <CardBody>
               <Tags
-                tags={this.state.tags}
-                onClick={this.handleCategoryBtnClick}
-                selected={this.state.selectedCategories}
+                tags={this.state.decks}
+                onClick={this.handleDeckBtnClick}
+                selected={this.state.selectedDecks}
               />
             </CardBody>
           </Card>

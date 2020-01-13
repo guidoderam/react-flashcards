@@ -2,13 +2,10 @@ import React from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 import {
   Button,
-  Col,
-  Container,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Row,
   Table
 } from "reactstrap";
 import truncate from "truncate-html";
@@ -22,7 +19,7 @@ const List = props => {
       <td>{truncate(card.answer, 70, { stripTags: true })}</td>
       <td>{truncate(card.readmore, 15)}</td>
       <td>
-        <Link to={`${url}/edit/${card.id}`}>
+        <Link to={`/decks/${props.deck}/${card.id}`}>
           <Button color="secondary">Edit</Button>
         </Link>
       </td>
@@ -39,29 +36,25 @@ const List = props => {
   ));
 
   return (
-    <Container>
-      <Row>
-        <Col>
-          <h1>My cards</h1>
-          <Table>
-            <thead>
-              <tr>
-                <th>Question</th>
-                <th>Answer</th>
-                <th>Read more</th>
-                <th>Edit</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>{cards}</tbody>
-          </Table>
-          <div>
-            <Button color="primary" tag={Link} to={`${url}/create`}>
-              Create new card
-            </Button>
-          </div>
-        </Col>
-      </Row>
+    <>
+      <h1>My cards</h1>
+      {props.cards !== null && props.cards.length > 0 ? (
+        <Table>
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Answer</th>
+              <th>Read more</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>{cards}</tbody>
+        </Table>
+      ) : (
+        <p>No cards.</p>
+      )}
+
       <Modal isOpen={props.modal} toggle={props.toggle} backdrop={false}>
         <ModalHeader toggle={props.toggle}>Confirm deletion</ModalHeader>
         <ModalBody>
@@ -76,7 +69,7 @@ const List = props => {
           </Button>
         </ModalFooter>
       </Modal>
-    </Container>
+    </>
   );
 };
 

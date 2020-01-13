@@ -1,24 +1,27 @@
 import React from "react";
 import { Container } from "reactstrap";
-import { auth, db } from "../../../firebase.js";
-import EditCardFormContainer from "./EditCardFormContainer";
+import { auth, db } from "../../firebase.js";
+import EditCardFormContainer from "../../containers/EditCardFormContainer";
 
 export default class Edit extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      card: null,
-      categories: []
+      card: null
     };
   }
 
-  getCard = (cardId, userId) => {
+  getCard = userId => {
+    const { deck, card } = this.props.match.params;
+
     return db
       .collection("users")
       .doc(userId)
+      .collection("decks")
+      .doc(deck)
       .collection("cards")
-      .doc(cardId)
+      .doc(card)
       .get()
       .then(card => {
         if (card.exists) {
@@ -33,28 +36,16 @@ export default class Edit extends React.Component {
       });
   };
 
-  getCategories = () => {
-    return db
-      .collection("tags")
-      .get()
-      .then(querySnapshot => {
-        const categories = querySnapshot.docs.map(doc => {
-          return { id: doc.id, ...doc.data() };
-        });
-
-        if (categories && categories.length > 0) {
-          this.setState({ categories });
-        }
-      });
-  };
-
   saveCard = card => {
     this.props.onLoading(true);
 
+    const { deck } = this.props.match.params;
+
     db.collection("users")
       .doc(auth.currentUser.uid)
+      .collection("decks")
+      .doc(deck)
       .collection("cards")
-      .doc(this.props.match.params.id)
       .update(card)
       .then(() => {
         this.props.history.push("/cards");
@@ -70,9 +61,7 @@ export default class Edit extends React.Component {
       if (user) {
         this.props.onLoading(true);
 
-        this.getCategories()
-          .then(this.getCard(this.props.match.params.id, user.uid))
-          .finally(this.props.onLoading(false));
+        this.getCard(user.uid).finally(this.props.onLoading(false));
       }
     });
   }
@@ -84,7 +73,6 @@ export default class Edit extends React.Component {
         {this.state.card ? (
           <EditCardFormContainer
             card={this.state.card}
-            categories={this.state.categories}
             onSubmit={this.saveCard}
           />
         ) : (

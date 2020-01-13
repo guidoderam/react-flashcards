@@ -12,71 +12,43 @@ export default class Start extends React.Component {
     };
   }
 
-  getFlashcards = uid => {
-    this.props.onLoading(true);
+  getFlashcards = async uid => {
+    const { deck } = this.props.match.params;
 
-    let cards = [];
-    const { category } = this.props.match.params;
-
-    let query = db
+    return db
       .collection("users")
       .doc(uid)
-      .collection("cards");
-    if (category) {
-      query = query.where("category", "==", category);
-    }
-    query
+      .collection("decks")
+      .doc(deck)
+      .collection("cards")
       .where("nextDay", "<", new Date())
       .orderBy("nextDay", "desc")
       .limit(30)
       .get()
       .then(querySnapshot => {
-        cards = querySnapshot.docs.map(doc => {
+        return querySnapshot.docs.map(doc => {
           return { id: doc.id, ...doc.data() };
         });
       })
-      .then(() => {
-        if (cards.length < 30) {
-          let query = db
+      .then(dueCards => {
+        if (dueCards.length < 30) {
+          return db
             .collection("users")
             .doc(uid)
-            .collection("cards");
-          if (category) {
-            query = query.where("category", "==", category);
-          }
-          return query
+            .collection("decks")
+            .doc(deck)
+            .collection("cards")
             .where("new", "==", true)
             .get()
             .then(querySnapshot => {
-              cards = cards.concat(
+              return dueCards.concat(
                 querySnapshot.docs.map(doc => {
                   return { id: doc.id, ...doc.data() };
                 })
               );
             });
         }
-      })
-      .finally(() => {
-        if (cards.length > 0) {
-          this.setState({
-            cards: cards
-          });
-        }
-
-        this.props.onLoading(false);
       });
-  };
-
-  handleCategoryBtnClick = selected => {
-    const index = this.state.selectedCategories.indexOf(selected);
-    const selectedCategories = this.state.selectedCategories;
-    if (index < 0) {
-      selectedCategories.push(selected);
-    } else {
-      selectedCategories.splice(index, 1);
-    }
-
-    this.setState({ selectedCategories });
   };
 
   handleRatingClick = e => {
@@ -106,9 +78,13 @@ export default class Start extends React.Component {
   };
 
   saveResponse = (cardId, value) => {
+    const { deck } = this.props.match.params;
+
     const cardRef = db
       .collection("users")
       .doc(auth.currentUser.uid)
+      .collection("decks")
+      .doc(deck)
       .collection("cards")
       .doc(cardId);
 
@@ -177,10 +153,25 @@ export default class Start extends React.Component {
     }));
   };
 
-  componentDidMount() {
-    auth.onAuthStateChanged(user => {
+  async componentDidMount() {
+    auth.onAuthStateChanged(async user => {
       if (user) {
-        this.getFlashcards(user.uid);
+        this.props.onLoading(true);
+
+        try {
+          const cards = await this.getFlashcards(user.uid);
+          if (cards) {
+            this.setState({
+              cards: cards
+            });
+          }
+        } catch (error) {
+          this.setState({
+            cards: []
+          });
+        } finally {
+          this.props.onLoading(false);
+        }
       }
     });
   }
@@ -188,7 +179,7 @@ export default class Start extends React.Component {
   render() {
     return (
       <>
-        {this.state.cards && this.state.cards.length === 0 ? (
+        {this.state.cards === null ? (
           <Container>
             <Row>
               <Col>
@@ -198,25 +189,29 @@ export default class Start extends React.Component {
           </Container>
         ) : this.state.cards &&
           this.state.currentCardIndex < this.state.cards.length ? (
-          <>
-            <div className="flip-container">
-              {
-                <Flashcard
-                  onRatingClick={this.handleRatingClick}
-                  key={this.state.cards[this.state.currentCardIndex].id}
-                  question={
-                    this.state.cards[this.state.currentCardIndex].question
-                  }
-                  answer={this.state.cards[this.state.currentCardIndex].answer}
-                />
-              }
-            </div>
-            <div className="info">
-              <span>
-                {this.state.currentCardIndex + 1} / {this.state.cards.length}
-              </span>
-            </div>
-          </>
+          <Row>
+            <Col>
+              <div className="flip-container">
+                {
+                  <Flashcard
+                    onRatingClick={this.handleRatingClick}
+                    key={this.state.cards[this.state.currentCardIndex].id}
+                    question={
+                      this.state.cards[this.state.currentCardIndex].question
+                    }
+                    answer={
+                      this.state.cards[this.state.currentCardIndex].answer
+                    }
+                  />
+                }
+              </div>
+              <div className="info">
+                <span>
+                  {this.state.currentCardIndex + 1} / {this.state.cards.length}
+                </span>
+              </div>
+            </Col>
+          </Row>
         ) : (
           <Container>
             <Row>
