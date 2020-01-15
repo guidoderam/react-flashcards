@@ -39,14 +39,13 @@ export default class CreateCardFormContainer extends React.Component {
 
   handleDeckChange = async event => {
     const { target } = event;
-    const { name } = target.value;
 
     await this.setState(
       {
-        [name]: target.value
+        deck: target.value
       },
       () => {
-        this.props.onDeckChange(target.id);
+        this.props.onDeckChange(target.value);
       }
     );
   };
@@ -120,7 +119,7 @@ export default class CreateCardFormContainer extends React.Component {
   render() {
     const { question, answer, readmore, deck } = this.state;
     const decks = this.props.decks.map(deck => (
-      <option key={deck.id} id={deck.id}>
+      <option key={deck.id} value={deck.id}>
         {deck.name}
       </option>
     ));
@@ -131,7 +130,7 @@ export default class CreateCardFormContainer extends React.Component {
           <Input
             type="select"
             name="deck"
-            id={"deck"}
+            id="deck"
             value={deck}
             onChange={e => this.handleDeckChange(e)}
           >
