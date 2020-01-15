@@ -3,16 +3,16 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
 import MyNavbar from "./components/Navbar";
 import LoadingOverlay from "./components/overlay/LoadingOverlay";
-import Cards from "./pages/Cards";
-import Decks from "./pages/Decks";
+import Decks from "./pages/Decks/list";
 import CreateDeck from "./pages/Decks/create";
 import EditDeck from "./pages/Decks/edit";
-import Create from "./pages/Cards/create";
-import Edit from "./pages/Cards/edit";
+import CreateCard from "./pages/Cards/create";
+import EditCard from "./pages/Cards/edit";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Train from "./pages/Training";
 import Start from "./pages/Training/start";
+import ViewDeck from "./pages/Decks/view";
 
 class App extends React.Component {
   constructor(props) {
@@ -41,37 +41,48 @@ class App extends React.Component {
               <Route exact path="/signin">
                 <SignIn />
               </Route>
-              <Route exact path="/cards">
-                <Cards onLoading={this.handleLoading} />
-              </Route>
               <Route
                 exact
                 path="/decks/edit/:id"
                 render={props => (
                   <EditDeck {...props} onLoading={this.handleLoading} />
                 )}
-              />
+              ></Route>
               <Route
                 exact
                 path="/decks/:deck/:card"
                 render={props => (
-                  <Edit {...props} onLoading={this.handleLoading} />
+                  <EditCard {...props} onLoading={this.handleLoading} />
                 )}
-              />
+              ></Route>
+              <Route
+                exact
+                path="/decks/:deck"
+                render={props => (
+                  <ViewDeck {...props} onLoading={this.handleLoading} />
+                )}
+              ></Route>
               <Route
                 exact
                 path="/cards/create/"
                 render={props => (
-                  <Create {...props} onLoading={this.handleLoading} />
+                  <CreateCard {...props} onLoading={this.handleLoading} />
                 )}
-              />
-              <Route exact path="/decks">
-                <Decks onLoading={this.handleLoading} />
-              </Route>
-              <Route exact path="/decks/create">
-                <CreateDeck onLoading={this.handleLoading} />
-              </Route>
-
+              ></Route>
+              <Route
+                exact
+                path="/decks"
+                render={props => (
+                  <Decks {...props} onLoading={this.handleLoading} />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/decks/create"
+                render={props => (
+                  <CreateDeck {...props} onLoading={this.handleLoading} />
+                )}
+              ></Route>
               <Route
                 exact
                 path="/training"

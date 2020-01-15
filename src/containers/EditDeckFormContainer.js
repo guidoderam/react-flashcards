@@ -70,7 +70,7 @@ export default class EditDeckFormContainer extends React.Component {
             onChange={this.handleChange}
           />
         </FormGroup>
-        <Button color="primary">Submit</Button>
+        <Button color="primary">Save</Button>
       </Form>
     );
   }

@@ -69,11 +69,21 @@ const Navbar = () => {
                   <NavLink
                     tag={RRNavLink}
                     exact
-                    to="/cards"
-                    active={window.location.href.indexOf("/cards") !== -1}
+                    to="/cards/create"
                     activeClassName="active"
                   >
-                    My cards
+                    Add Card
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag={RRNavLink}
+                    exact
+                    to="/decks"
+                    active={window.location.href.indexOf("/decks") !== -1}
+                    activeClassName="active"
+                  >
+                    My Cards
                   </NavLink>
                 </NavItem>
               </>

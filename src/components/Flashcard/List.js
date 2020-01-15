@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Button,
   Modal,
@@ -11,7 +11,7 @@ import {
 import truncate from "truncate-html";
 
 const List = props => {
-  let { url } = useRouteMatch();
+  let { deck } = useParams();
 
   const cards = props.cards.map(card => (
     <tr key={card.id}>
@@ -19,7 +19,7 @@ const List = props => {
       <td>{truncate(card.answer, 70, { stripTags: true })}</td>
       <td>{truncate(card.readmore, 15)}</td>
       <td>
-        <Link to={`/decks/${props.deck}/${card.id}`}>
+        <Link to={`/decks/${deck}/${card.id}`}>
           <Button color="secondary">Edit</Button>
         </Link>
       </td>
@@ -37,7 +37,6 @@ const List = props => {
 
   return (
     <>
-      <h1>My cards</h1>
       {props.cards !== null && props.cards.length > 0 ? (
         <Table>
           <thead>

@@ -38,7 +38,7 @@ export default class Create extends React.Component {
       .collection("cards")
       .add(card)
       .then(() => {
-        this.props.history.push("/cards");
+        this.props.history.goBack();
       })
       .catch(error => {
         console.error("Error adding document: ", error);

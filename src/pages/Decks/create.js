@@ -15,7 +15,7 @@ const Create = props => {
       .collection("decks")
       .add(deck)
       .then(() => {
-        history.push("/decks");
+        history.goBack();
       })
       .catch(error => {
         console.error("Error adding document: ", error);

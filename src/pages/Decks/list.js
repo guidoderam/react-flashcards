@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Col, Container, Row } from "reactstrap";
-import DecksTable from "../../containers/DecksTable";
+import DeckList from "../../containers/Decks";
 import { auth, db } from "../../firebase.js";
 
 export default class Decks extends React.Component {
@@ -50,7 +50,11 @@ export default class Decks extends React.Component {
         <Row>
           <Col>
             <h1>My Decks</h1>
-            <DecksTable onLoading={this.props.onLoading} />
+            <DeckList onLoading={this.props.onLoading} />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
             <Button color="primary" tag={Link} to="/decks/create">
               Create new deck
             </Button>

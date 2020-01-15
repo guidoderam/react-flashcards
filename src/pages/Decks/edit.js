@@ -1,5 +1,5 @@
 import React from "react";
-import { Container } from "reactstrap";
+import { Container, Row, Col } from "reactstrap";
 import EditDeckFormContainer from "../../containers/EditDeckFormContainer";
 import { auth, db } from "../../firebase.js";
 
@@ -39,7 +39,7 @@ export default class Edit extends React.Component {
       .doc(this.props.match.params.id)
       .update(deck)
       .then(() => {
-        this.props.history.push("/decks");
+        this.props.history.goBack();
       })
       .catch(error => {
         console.error("Error adding document: ", error);
@@ -65,12 +65,16 @@ export default class Edit extends React.Component {
     const { deck } = this.state;
     return (
       <Container>
-        <h2>Edit</h2>
-        {deck ? (
-          <EditDeckFormContainer deck={deck} onSubmit={this.saveDeck} />
-        ) : (
-          <p>Loading...</p>
-        )}
+        <Row>
+          <Col>
+            <h2>Edit Deck</h2>
+            {deck ? (
+              <EditDeckFormContainer deck={deck} onSubmit={this.saveDeck} />
+            ) : (
+              <p>Loading...</p>
+            )}
+          </Col>
+        </Row>
       </Container>
     );
   }

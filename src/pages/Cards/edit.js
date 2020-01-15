@@ -39,16 +39,17 @@ export default class Edit extends React.Component {
   saveCard = card => {
     this.props.onLoading(true);
 
-    const { deck } = this.props.match.params;
+    const { deck, card: cardId } = this.props.match.params;
 
     db.collection("users")
       .doc(auth.currentUser.uid)
       .collection("decks")
       .doc(deck)
       .collection("cards")
+      .doc(cardId)
       .update(card)
       .then(() => {
-        this.props.history.push("/cards");
+        this.props.history.goBack();
       })
       .catch(error => {
         console.error("Error adding document: ", error);
