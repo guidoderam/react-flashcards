@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, Card, CardBody, Col, Container, Row } from "reactstrap";
-import Tags from "../../components/Flashcard/Tags";
+import { Button, Table, Card, Col, Container, Row } from "reactstrap";
 import { auth, db } from "../../firebase.js";
 
 export default class Train extends React.Component {
@@ -8,23 +7,9 @@ export default class Train extends React.Component {
     super(props);
 
     this.state = {
-      selectedDecks: [],
-      decks: null,
-      startButtonDisabled: false
+      decks: null
     };
   }
-
-  handleDeckBtnClick = selected => {
-    const index = this.state.selectedDecks.indexOf(selected);
-    const selectedDecks = this.state.selectedDecks;
-    if (index < 0) {
-      selectedDecks.push(selected);
-    } else {
-      selectedDecks.splice(index, 1);
-    }
-
-    this.setState({ selectedCategories: selectedDecks });
-  };
 
   getDecks = async uid => {
     return db
@@ -79,15 +64,9 @@ export default class Train extends React.Component {
       });
   };
 
-  handleStartClick = e => {
-    e.preventDefault();
-
-    if (this.state.selectedDecks.length > 0) {
-      const deck = this.state.selectedDecks[0];
-      this.props.history.push(`/training/start/${deck}`);
-    } else {
-      this.props.history.push("/training/start");
-    }
+  handleStartBtnClick = e => {
+    const deck = e.target.dataset.deck;
+    this.props.history.push(`/training/start/${deck}`);
   };
 
   componentDidMount() {
@@ -114,24 +93,45 @@ export default class Train extends React.Component {
             {this.state.decks == null ? (
               <p>Loading...</p>
             ) : this.state.decks.length > 0 ? (
-              <p>You have cards due for these categories.</p>
+              <p>You have cards due for these decks.</p>
             ) : (
-              <p>There are no cards for you to answer at this moment.</p>
+              <p>You have finished all decks for now.</p>
             )}
           </Col>
         </Row>
         {this.state.decks ? (
-          <Card>
-            <CardBody>
-              <Tags
-                tags={this.state.decks}
-                onClick={this.handleDeckBtnClick}
-                selected={this.state.selectedDecks}
-              />
-            </CardBody>
-          </Card>
+          <Table>
+            <thead>
+              <tr>
+                <th>Deck</th>
+                <th>Due</th>
+                <th>New</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.decks.map(deck => {
+                return (
+                  <tr key={deck.id}>
+                    <td>{deck.name}</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <Button
+                        color="primary"
+                        data-deck={deck.id}
+                        onClick={this.handleStartBtnClick}
+                      >
+                        Start
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         ) : null}
-        <Row>
+        {/*         <Row>
           <Col xs="12">
             <Button
               className="btn-start"
@@ -139,10 +139,10 @@ export default class Train extends React.Component {
               onClick={this.handleStartClick}
               disabled={this.state.startButtonDisabled}
             >
-              Start
+              Train on all decks
             </Button>
           </Col>
-        </Row>
+        </Row> */}
       </Container>
     );
   }
