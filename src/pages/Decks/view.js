@@ -144,6 +144,12 @@ export default class ViewDeck extends React.Component {
                 <Card key={deck.id}>
                   <CardBody>
                     <CardTitle>{deck.name}</CardTitle>
+                    <CardText>
+                      Cards: {deck.cards ? Object.values(deck.cards).length : 0}
+                    </CardText>
+                    <CardText>
+                      Shared Deck: {deck.isPublic ? "Yes" : "No"}
+                    </CardText>
                     {deck.description ? (
                       <CardText>{deck.description}</CardText>
                     ) : null}

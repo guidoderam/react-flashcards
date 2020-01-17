@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Button, Form, FormGroup, FormText, Input, Label } from "reactstrap";
 
 export default class EditDeckFormContainer extends React.Component {
   constructor(props) {
@@ -8,6 +8,7 @@ export default class EditDeckFormContainer extends React.Component {
     this.state = {
       id: "",
       name: "",
+      isPublic: false,
       validate: {
         name: ""
       }
@@ -34,29 +35,31 @@ export default class EditDeckFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const name = this.state.name;
+    const { name, isPublic } = this.state;
 
     if (name.length === 0 || name.length === 0) {
       return;
     }
 
     const updatedDeck = {
-      name
+      name,
+      isPublic
     };
 
     this.props.onSubmit(updatedDeck);
   }
 
   componentDidMount() {
-    const { id, name } = this.props.deck;
+    const { id, name, isPublic } = this.props.deck;
     this.setState({
       id,
-      name
+      name,
+      isPublic
     });
   }
 
   render() {
-    const { name } = this.state;
+    const { name, isPublic } = this.state;
 
     return (
       <Form onSubmit={e => this.handleSubmit(e)}>
@@ -69,6 +72,21 @@ export default class EditDeckFormContainer extends React.Component {
             value={name}
             onChange={this.handleChange}
           />
+        </FormGroup>
+        <FormGroup check className="mb-3">
+          <Label check>
+            <Input
+              type="checkbox"
+              name="isPublic"
+              checked={isPublic}
+              onChange={e => this.handleChange(e)}
+            />
+            Share Deck
+          </Label>
+          <FormText color="muted">
+            Shared decks can be imported by other users. Changes made by others
+            won't affect your deck.
+          </FormText>
         </FormGroup>
         <Button color="primary">Save</Button>
       </Form>
