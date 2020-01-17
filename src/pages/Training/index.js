@@ -19,48 +19,23 @@ export default class Train extends React.Component {
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
-          return { id: doc.id, ...doc.data() };
-        });
-      })
-      .then(decks => {
-        const deckHasDueCards = async deck => {
-          // Check for cards due in this deck that have already
-          // been answered
-          const deckResult = await db
-            .collection("users")
-            .doc(uid)
-            .collection("decks")
-            .doc(deck.id)
-            .collection("cards")
-            .where("nextDay", "<", new Date())
-            .orderBy("nextDay", "desc")
-            .limit(1)
-            .get()
-            .then(querySnapshot => {
-              return { hasCards: querySnapshot.docs.length > 0, ...deck };
-            });
+          const data = doc.data();
+          let newCards = 0;
+          let dueCards = 0;
 
-          // Check for new cards if the previous query
-          // returned no results
-          if (!deckResult.hasCards) {
-            return db
-              .collection("users")
-              .doc(uid)
-              .collection("decks")
-              .doc(deck.id)
-              .collection("cards")
-              .where("new", "==", true)
-              .limit(1)
-              .get()
-              .then(querySnapshot => {
-                return { hasCards: querySnapshot.docs.length > 0, ...deck };
-              });
+          if (data.cards) {
+            const today = new Date();
+
+            newCards = Object.values(data.cards).reduce((acc, val) => {
+              return acc + (val.dueDate === null ? 1 : 0);
+            }, 0);
+            dueCards = Object.values(data.cards).reduce((acc, val) => {
+              return acc + (val.dueDate < today ? 1 : 0);
+            }, 0);
           }
 
-          return deckResult;
-        };
-
-        return Promise.all(decks.map(deck => deckHasDueCards(deck)));
+          return { id: doc.id, ...data, newCards, dueCards };
+        });
       });
   };
 
@@ -75,7 +50,7 @@ export default class Train extends React.Component {
         this.props.onLoading(true);
         this.getDecks(user.uid)
           .then(decks => {
-            this.setState({ decks: decks.filter(x => x.hasCards) });
+            this.setState({ decks });
           })
           .finally(() => {
             this.props.onLoading(false);
@@ -114,12 +89,13 @@ export default class Train extends React.Component {
                 return (
                   <tr key={deck.id}>
                     <td>{deck.name}</td>
-                    <td></td>
-                    <td></td>
+                    <td>{deck.dueCards}</td>
+                    <td>{deck.newCards}</td>
                     <td>
                       <Button
                         color="primary"
                         data-deck={deck.id}
+                        disabled={deck.dueCards === 0 && deck.newCards === 0}
                         onClick={this.handleStartBtnClick}
                       >
                         Start

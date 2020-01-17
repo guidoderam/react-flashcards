@@ -10,7 +10,7 @@ import {
   CardText
 } from "reactstrap";
 import List from "../../components/Flashcard/List";
-import { db } from "../../firebase.js";
+import { db, firebase } from "../../firebase.js";
 import { auth } from "../../firebase.js";
 import { Link } from "react-router-dom";
 
@@ -62,7 +62,7 @@ export default class ViewDeck extends React.Component {
 
   toggle = () => this.setState({ modal: !this.state.modal });
 
-  removeCard = id => {
+  removeCardFromLocalState = id => {
     const cards = this.state.cards.filter(card => card.id !== id);
     this.setState({ cards });
   };
@@ -70,15 +70,31 @@ export default class ViewDeck extends React.Component {
   handleDeleteConfirmationClick = () => {
     const { deck } = this.props.match.params;
     const cardId = this.state.currentCard;
-    db.collection("users")
+
+    const batch = db.batch();
+
+    const cardRef = db
+      .collection("users")
       .doc(auth.currentUser.uid)
       .collection("decks")
       .doc(deck)
       .collection("cards")
-      .doc(cardId)
-      .delete()
+      .doc(cardId);
+    batch.delete(cardRef);
+
+    const deckRef = db
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .collection("decks")
+      .doc(deck);
+    batch.update(deckRef, {
+      [`cards.${cardRef.id}.dueDate`]: firebase.firestore.FieldValue.delete()
+    });
+
+    batch
+      .commit()
       .then(() => {
-        this.removeCard(cardId);
+        this.removeCardFromLocalState(cardId);
         this.toggle();
       })
       .catch(function(error) {
@@ -118,6 +134,7 @@ export default class ViewDeck extends React.Component {
 
   render() {
     const { deck } = this.state;
+
     return (
       <Container>
         <Row>

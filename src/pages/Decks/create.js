@@ -10,6 +10,8 @@ const Create = props => {
   const saveDeck = deck => {
     props.onLoading(true);
 
+    deck.cards = {};
+
     db.collection("users")
       .doc(auth.currentUser.uid)
       .collection("decks")

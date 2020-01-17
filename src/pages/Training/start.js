@@ -8,46 +8,58 @@ export default class Start extends React.Component {
     super(props);
     this.state = {
       currentCardIndex: 0,
-      cards: null
+      cards: null,
+      deck: null
     };
   }
 
-  getFlashcards = async uid => {
-    const { deck } = this.props.match.params;
+  getDeck = async uid => {
+    const { deck: deckId } = this.props.match.params;
 
     return db
       .collection("users")
       .doc(uid)
       .collection("decks")
-      .doc(deck)
+      .doc(deckId)
+      .get()
+      .then(deck => {
+        if (deck.exists) {
+          return { id: deck.id, ...deck.data() };
+        }
+
+        return false;
+      })
+      .catch(function(error) {
+        console.error("Error getting document: ", error);
+      });
+  };
+
+  getFlashcards = async (uid, deck) => {
+    const { deck: deckId } = this.props.match.params;
+
+    let availableCards = [];
+    if (deck && deck.cards) {
+      const today = new Date();
+      for (let [key, value] of Object.entries(deck.cards)) {
+        if (value.dueDate === null || value.dueDate < today) {
+          availableCards.push(key);
+        }
+      }
+    }
+
+    return db
+      .collection("users")
+      .doc(uid)
+      .collection("decks")
+      .doc(deckId)
       .collection("cards")
-      .where("nextDay", "<", new Date())
-      .orderBy("nextDay", "desc")
+      .where(firebase.firestore.FieldPath.documentId(), "in", availableCards)
       .limit(30)
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
           return { id: doc.id, ...doc.data() };
         });
-      })
-      .then(dueCards => {
-        if (dueCards.length < 30) {
-          return db
-            .collection("users")
-            .doc(uid)
-            .collection("decks")
-            .doc(deck)
-            .collection("cards")
-            .where("new", "==", true)
-            .get()
-            .then(querySnapshot => {
-              return dueCards.concat(
-                querySnapshot.docs.map(doc => {
-                  return { id: doc.id, ...doc.data() };
-                })
-              );
-            });
-        }
       });
   };
 
@@ -88,6 +100,8 @@ export default class Start extends React.Component {
       .collection("cards")
       .doc(cardId);
 
+    // todo: change to transaction when they become available
+    // for offline apps
     cardRef.get().then(doc => {
       const card = doc.data();
 
@@ -96,8 +110,10 @@ export default class Start extends React.Component {
       const nextDay = new Date();
       let ef = 2.5;
 
+      const batch = db.batch();
+
       if (grade < 3) {
-        cardRef.update({
+        const updatedCard = {
           repetition: 1,
           nextDay,
           new: false,
@@ -107,8 +123,19 @@ export default class Start extends React.Component {
             repetition: 1,
             nextDay
           })
+        };
+        batch.update(cardRef, updatedCard);
+
+        const deckRef = db
+          .collection("users")
+          .doc(auth.currentUser.uid)
+          .collection("decks")
+          .doc(deck);
+        batch.update(deckRef, {
+          [`cards.${cardRef.id}.dueDate`]: updatedCard.nextDay || null
         });
 
+        batch.commit();
         return;
       }
 
@@ -132,7 +159,7 @@ export default class Start extends React.Component {
 
       nextDay.setDate(nextDay.getDate() + interval);
 
-      cardRef.update({
+      const updatedCard = {
         ef,
         repetition: repetition + 1,
         nextDay,
@@ -143,7 +170,19 @@ export default class Start extends React.Component {
           repetition: repetition + 1,
           nextDay
         })
+      };
+      batch.update(cardRef, updatedCard);
+
+      const deckRef = db
+        .collection("users")
+        .doc(auth.currentUser.uid)
+        .collection("decks")
+        .doc(deck);
+      batch.update(deckRef, {
+        [`cards.${cardRef.id}.dueDate`]: updatedCard.nextDay || null
       });
+
+      batch.commit();
     });
   };
 
@@ -159,7 +198,8 @@ export default class Start extends React.Component {
         this.props.onLoading(true);
 
         try {
-          const cards = await this.getFlashcards(user.uid);
+          const deck = await this.getDeck(user.uid);
+          const cards = await this.getFlashcards(user.uid, deck);
           if (cards) {
             this.setState({
               cards: cards

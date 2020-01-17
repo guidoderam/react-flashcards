@@ -31,12 +31,28 @@ export default class Create extends React.Component {
   saveCard = card => {
     this.props.onLoading(true);
 
-    db.collection("users")
+    const batch = db.batch();
+
+    const cardRef = db
+      .collection("users")
       .doc(auth.currentUser.uid)
       .collection("decks")
       .doc(this.state.deck)
       .collection("cards")
-      .add(card)
+      .doc();
+    batch.set(cardRef, card);
+
+    const deckRef = db
+      .collection("users")
+      .doc(auth.currentUser.uid)
+      .collection("decks")
+      .doc(this.state.deck);
+    batch.update(deckRef, {
+      [`cards.${cardRef.id}.dueDate`]: card.nextDay || null
+    });
+
+    batch
+      .commit()
       .then(() => {
         this.props.history.goBack();
       })
