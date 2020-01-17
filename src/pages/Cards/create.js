@@ -8,7 +8,7 @@ export default class Create extends React.Component {
     super(props);
 
     this.state = {
-      deck: "",
+      deckId: "",
       decks: []
     };
   }
@@ -37,7 +37,7 @@ export default class Create extends React.Component {
       .collection("users")
       .doc(auth.currentUser.uid)
       .collection("decks")
-      .doc(this.state.deck)
+      .doc(this.state.deckId)
       .collection("cards")
       .doc();
     batch.set(cardRef, card);
@@ -46,24 +46,21 @@ export default class Create extends React.Component {
       .collection("users")
       .doc(auth.currentUser.uid)
       .collection("decks")
-      .doc(this.state.deck);
+      .doc(this.state.deckId);
     batch.update(deckRef, {
       [`cards.${cardRef.id}.dueDate`]: card.nextDay || null
     });
 
-    batch
-      .commit()
-      .then(() => {
-        this.props.history.goBack();
-      })
-      .catch(error => {
-        console.error("Error adding document: ", error);
-      })
-      .finally(this.props.onLoading(false));
+    batch.commit().catch(error => {
+      console.error("Error adding document: ", error);
+    });
+
+    this.props.onLoading(false);
+    this.props.history.goBack();
   };
 
   handleDeckChange = deckId => {
-    this.setState({ deck: deckId });
+    this.setState({ deckId });
   };
 
   componentDidMount() {

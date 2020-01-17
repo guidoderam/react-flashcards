@@ -43,6 +43,13 @@ class App extends React.Component {
               </Route>
               <Route
                 exact
+                path="/decks/create"
+                render={props => (
+                  <CreateDeck {...props} onLoading={this.handleLoading} />
+                )}
+              ></Route>
+              <Route
+                exact
                 path="/decks/edit/:id"
                 render={props => (
                   <EditDeck {...props} onLoading={this.handleLoading} />
@@ -74,13 +81,6 @@ class App extends React.Component {
                 path="/decks"
                 render={props => (
                   <Decks {...props} onLoading={this.handleLoading} />
-                )}
-              ></Route>
-              <Route
-                exact
-                path="/decks/create"
-                render={props => (
-                  <CreateDeck {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route

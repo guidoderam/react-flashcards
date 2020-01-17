@@ -16,13 +16,12 @@ const Create = props => {
       .doc(auth.currentUser.uid)
       .collection("decks")
       .add(deck)
-      .then(() => {
-        history.goBack();
-      })
       .catch(error => {
         console.error("Error adding document: ", error);
-      })
-      .finally(props.onLoading(false));
+      });
+
+    props.onLoading(false);
+    history.goBack();
   };
 
   return (

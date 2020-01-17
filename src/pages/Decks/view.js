@@ -88,18 +88,15 @@ export default class ViewDeck extends React.Component {
       .collection("decks")
       .doc(deck);
     batch.update(deckRef, {
-      [`cards.${cardRef.id}.dueDate`]: firebase.firestore.FieldValue.delete()
+      [`cards.${cardRef.id}`]: firebase.firestore.FieldValue.delete()
     });
 
-    batch
-      .commit()
-      .then(() => {
-        this.removeCardFromLocalState(cardId);
-        this.toggle();
-      })
-      .catch(function(error) {
-        console.error("Error removing document: ", error);
-      });
+    batch.commit().catch(function(error) {
+      console.error("Error removing document: ", error);
+    });
+
+    this.removeCardFromLocalState(cardId);
+    this.toggle();
   };
 
   handleDeleteClick = e => {

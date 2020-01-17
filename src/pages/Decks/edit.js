@@ -38,13 +38,12 @@ export default class Edit extends React.Component {
       .collection("decks")
       .doc(this.props.match.params.id)
       .update(deck)
-      .then(() => {
-        this.props.history.goBack();
-      })
       .catch(error => {
         console.error("Error adding document: ", error);
-      })
-      .finally(this.props.onLoading(false));
+      });
+
+    this.props.history.goBack();
+    this.props.onLoading(false);
   };
 
   componentDidMount() {

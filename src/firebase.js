@@ -16,6 +16,8 @@ const config = {
 
 firebase.initializeApp(config);
 
+firebase.firestore().enablePersistence({ synchronizeTabs: true });
+
 const provider = new firebase.auth.GoogleAuthProvider();
 const auth = firebase.auth();
 const ui = new firebaseui.auth.AuthUI(auth);

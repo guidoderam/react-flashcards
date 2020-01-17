@@ -48,13 +48,12 @@ export default class Edit extends React.Component {
       .collection("cards")
       .doc(cardId)
       .update(card)
-      .then(() => {
-        this.props.history.goBack();
-      })
       .catch(error => {
         console.error("Error adding document: ", error);
-      })
-      .finally(this.props.onLoading(false));
+      });
+
+    this.props.onLoading(false);
+    this.props.history.goBack();
   };
 
   componentDidMount() {
