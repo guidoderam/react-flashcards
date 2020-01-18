@@ -4,6 +4,7 @@ import "./App.scss";
 import MyNavbar from "./components/Navbar";
 import LoadingOverlay from "./components/overlay/LoadingOverlay";
 import Decks from "./pages/Decks/list";
+import SharedDecks from "./pages/Decks/shared";
 import CreateDeck from "./pages/Decks/create";
 import EditDeck from "./pages/Decks/edit";
 import CreateCard from "./pages/Cards/create";
@@ -60,6 +61,13 @@ class App extends React.Component {
                 path="/decks/:deck/:card"
                 render={props => (
                   <EditCard {...props} onLoading={this.handleLoading} />
+                )}
+              ></Route>
+              <Route
+                exact
+                path="/decks/shared"
+                render={props => (
+                  <SharedDecks {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route

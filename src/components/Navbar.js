@@ -86,6 +86,16 @@ const Navbar = () => {
                     My Cards
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    tag={RRNavLink}
+                    exact
+                    to="/decks/shared"
+                    activeClassName="active"
+                  >
+                    Shared Decks
+                  </NavLink>
+                </NavItem>
               </>
             ) : null}
             <NavItem>
