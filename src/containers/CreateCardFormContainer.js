@@ -15,10 +15,9 @@ export default class CreateCardFormContainer extends React.Component {
     super(props);
 
     this.state = {
-      deck: props.decks[0].name,
+      deckId: props.decks[0].id,
       question: RichTextEditor.createEmptyValue(),
       answer: RichTextEditor.createEmptyValue(),
-      id: "",
       readmore: "",
       validate: {
         question: "",
@@ -40,14 +39,9 @@ export default class CreateCardFormContainer extends React.Component {
   handleDeckChange = async event => {
     const { target } = event;
 
-    await this.setState(
-      {
-        deck: target.value
-      },
-      () => {
-        this.props.onDeckChange(target.value);
-      }
-    );
+    await this.setState({
+      deck: target.value
+    });
   };
 
   handleQuestionChange = value => {
@@ -96,28 +90,24 @@ export default class CreateCardFormContainer extends React.Component {
     const question = this.state.question.toString("html");
     const answer = this.state.answer.toString("html");
     const readmore = this.state.readmore;
-    const deck = this.state.deck;
+    const deckId = this.state.deckId;
 
     if (question.length === 0 || answer.length === 0) {
       return;
     }
 
-    const dateCreated = new Date();
-    const newCard = {
+    const formValues = {
       question,
       answer,
       readmore,
-      deck,
-      new: true,
-      created: dateCreated,
-      updated: dateCreated
+      deckId
     };
 
-    this.props.onSubmit(newCard);
+    this.props.onSubmit(formValues);
   }
 
   render() {
-    const { question, answer, readmore, deck } = this.state;
+    const { question, answer, readmore, deckId: deck } = this.state;
     const decks = this.props.decks.map(deck => (
       <option key={deck.id} value={deck.id}>
         {deck.name}

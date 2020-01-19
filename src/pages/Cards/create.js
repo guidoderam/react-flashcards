@@ -9,22 +9,26 @@ export default class Create extends React.Component {
     super(props);
 
     this.state = {
-      deckId: "",
       decks: []
     };
   }
 
-  saveCard = async card => {
+  handleSubmit = async formValues => {
     this.props.onLoading(true);
 
-    await FirestoreApi.addCard(this.state.deckId, card);
+    const today = new Date();
+
+    const newCard = {
+      question: formValues.question,
+      answer: formValues.answer,
+      readmore: formValues.readmore,
+      created: today,
+      updated: today
+    };
+    await FirestoreApi.addCard(formValues.deckId, newCard);
 
     this.props.onLoading(false);
     this.props.history.goBack();
-  };
-
-  handleDeckChange = deckId => {
-    this.setState({ deckId });
   };
 
   componentDidMount() {
@@ -35,8 +39,7 @@ export default class Create extends React.Component {
         FirestoreApi.getDecks()
           .then(decks => {
             this.setState({
-              decks,
-              deck: decks.length > 0 ? decks[0].id : null
+              decks
             });
           })
           .finally(this.props.onLoading(false));
@@ -53,8 +56,7 @@ export default class Create extends React.Component {
             {this.state.decks.length > 0 ? (
               <CreateCardFormContainer
                 decks={this.state.decks}
-                onDeckChange={this.handleDeckChange}
-                onSubmit={this.saveCard}
+                onSubmit={this.handleSubmit}
               />
             ) : (
               <p>Loading...</p>
