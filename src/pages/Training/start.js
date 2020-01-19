@@ -15,13 +15,13 @@ export default class Start extends React.Component {
   }
 
   getDeck = async () => {
-    const { deck: deckId } = this.props.match.params;
+    const { deckId } = this.props.match.params;
 
     return await FirestoreApi.getDeck(deckId);
   };
 
   getFlashcards = async deck => {
-    const { deck: deckId } = this.props.match.params;
+    const { deckId } = this.props.match.params;
 
     let dueCards = [];
     if (deck && deck.cards) {
@@ -63,11 +63,11 @@ export default class Start extends React.Component {
   };
 
   saveResponse = async (cardId, value) => {
-    const { deck } = this.props.match.params;
+    const { deckId } = this.props.match.params;
 
     // todo: change to transaction when they become available
     // for offline apps
-    const card = await FirestoreApi.getCard(deck, cardId);
+    const card = await FirestoreApi.getCard(deckId, cardId);
 
     const grade = this.calcGrade(value);
     let interval = 1;
@@ -87,7 +87,7 @@ export default class Start extends React.Component {
         })
       };
 
-      return FirestoreApi.updateCard(deck, cardId, updatedCard);
+      return FirestoreApi.updateCard(deckId, cardId, updatedCard);
     }
 
     if (card.ef && card.ef < 2.5) {
@@ -123,7 +123,7 @@ export default class Start extends React.Component {
       })
     };
 
-    return FirestoreApi.updateCard(deck, cardId, updatedCard);
+    return FirestoreApi.updateCard(deckId, cardId, updatedCard);
   };
 
   nextCard = () => {

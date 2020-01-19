@@ -72,7 +72,7 @@ class App extends React.Component {
               ></Route>
               <Route
                 exact
-                path="/decks/:deck"
+                path="/decks/:deckId"
                 render={props => (
                   <ViewDeck {...props} onLoading={this.handleLoading} />
                 )}
@@ -100,7 +100,7 @@ class App extends React.Component {
               ></Route>
               <Route
                 exact
-                path="/training/start/:deck?"
+                path="/training/start/:deckId?"
                 render={props => (
                   <Start {...props} onLoading={this.handleLoading} />
                 )}

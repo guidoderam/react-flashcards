@@ -32,10 +32,10 @@ export default class ViewDeck extends React.Component {
   };
 
   handleDeleteConfirmationClick = async () => {
-    const { deck } = this.props.match.params;
+    const { deckId } = this.props.match.params;
     const cardId = this.state.currentCard;
 
-    await FirestoreApi.deleteCard(deck, cardId);
+    await FirestoreApi.deleteCard(deckId, cardId);
 
     this.removeCardFromLocalState(cardId);
     this.toggle();
@@ -53,7 +53,7 @@ export default class ViewDeck extends React.Component {
     auth.onAuthStateChanged(async user => {
       if (user) {
         try {
-          const { deck: deckId } = this.props.match.params;
+          const { deckId } = this.props.match.params;
           const deck = await FirestoreApi.getDeck(deckId);
           const cards = await FirestoreApi.getCards(deckId);
 
