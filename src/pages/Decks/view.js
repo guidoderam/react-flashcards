@@ -10,9 +10,9 @@ import {
   CardText
 } from "reactstrap";
 import List from "../../components/Flashcard/List";
-import { db, firebase } from "../../firebase.js";
 import { auth } from "../../firebase.js";
 import { Link } from "react-router-dom";
+import FirestoreApi from "../../api/firestoreApi";
 
 export default class ViewDeck extends React.Component {
   constructor(props) {
@@ -24,42 +24,6 @@ export default class ViewDeck extends React.Component {
     };
   }
 
-  getDeck = async (deckId, uid) => {
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .doc(deckId)
-      .get()
-      .then(deck => {
-        if (deck.exists) {
-          return { id: deck.id, ...deck.data() };
-        }
-
-        return false;
-      })
-      .catch(function(error) {
-        console.error("Error getting document: ", error);
-      });
-  };
-
-  getCards = async (deckId, uid) => {
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .doc(deckId)
-      .collection("cards")
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
-        });
-      });
-  };
-
   toggle = () => this.setState({ modal: !this.state.modal });
 
   removeCardFromLocalState = id => {
@@ -67,33 +31,11 @@ export default class ViewDeck extends React.Component {
     this.setState({ cards });
   };
 
-  handleDeleteConfirmationClick = () => {
+  handleDeleteConfirmationClick = async () => {
     const { deck } = this.props.match.params;
     const cardId = this.state.currentCard;
 
-    const batch = db.batch();
-
-    const cardRef = db
-      .collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .doc(deck)
-      .collection("cards")
-      .doc(cardId);
-    batch.delete(cardRef);
-
-    const deckRef = db
-      .collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .doc(deck);
-    batch.update(deckRef, {
-      [`cards.${cardRef.id}`]: firebase.firestore.FieldValue.delete()
-    });
-
-    batch.commit().catch(function(error) {
-      console.error("Error removing document: ", error);
-    });
+    await FirestoreApi.deleteCard(deck, cardId);
 
     this.removeCardFromLocalState(cardId);
     this.toggle();
@@ -112,8 +54,8 @@ export default class ViewDeck extends React.Component {
       if (user) {
         try {
           const { deck: deckId } = this.props.match.params;
-          const deck = await this.getDeck(deckId, user.uid);
-          const cards = await this.getCards(deckId, user.uid);
+          const deck = await FirestoreApi.getDeck(deckId);
+          const cards = await FirestoreApi.getCards(deckId);
 
           this.setState({
             deck,

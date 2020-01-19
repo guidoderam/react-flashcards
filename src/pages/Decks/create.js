@@ -1,24 +1,16 @@
 import React from "react";
 import { Container, Row, Col } from "reactstrap";
-import { auth, db } from "../../firebase.js";
 import CreateDeckFormContainer from "../../containers/CreateDeckFormContainer";
 import { useHistory } from "react-router-dom";
+import FirestoreApi from "../../api/firestoreApi";
 
 const Create = props => {
   const history = useHistory();
 
-  const saveDeck = deck => {
+  const saveDeck = async deck => {
     props.onLoading(true);
 
-    deck.cards = {};
-
-    db.collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .add(deck)
-      .catch(error => {
-        console.error("Error adding document: ", error);
-      });
+    await FirestoreApi.addDeck(deck);
 
     props.onLoading(false);
     history.goBack();

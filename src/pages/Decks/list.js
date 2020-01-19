@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Col, Container, Row } from "reactstrap";
 import DeckList from "../../containers/Decks";
-import { auth, db } from "../../firebase.js";
+import { auth } from "../../firebase.js";
+import FirestoreApi from "../../api/firestoreApi";
 
 export default class Decks extends React.Component {
   constructor(props) {
@@ -13,27 +14,12 @@ export default class Decks extends React.Component {
     };
   }
 
-  getDecks = async uid => {
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
-        });
-      });
-  };
-
   componentDidMount() {
     auth.onAuthStateChanged(user => {
       if (user) {
         this.props.onLoading(true);
 
-        this.getDecks(user.uid)
+        FirestoreApi.getDecks()
           .then(decks => {
             this.setState({
               decks

@@ -1,7 +1,8 @@
 import React from "react";
 import { Container, Col, Row } from "reactstrap";
-import { auth, db } from "../../firebase.js";
+import { auth } from "../../firebase.js";
 import CreateCardFormContainer from "../../containers/CreateCardFormContainer";
+import FirestoreApi from "../../api/firestoreApi";
 
 export default class Create extends React.Component {
   constructor(props) {
@@ -13,47 +14,10 @@ export default class Create extends React.Component {
     };
   }
 
-  getDecks = async uid => {
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
-        });
-      });
-  };
-
-  saveCard = card => {
+  saveCard = async card => {
     this.props.onLoading(true);
 
-    const batch = db.batch();
-
-    const cardRef = db
-      .collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .doc(this.state.deckId)
-      .collection("cards")
-      .doc();
-    batch.set(cardRef, card);
-
-    const deckRef = db
-      .collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .doc(this.state.deckId);
-    batch.update(deckRef, {
-      [`cards.${cardRef.id}.dueDate`]: card.nextDay || null
-    });
-
-    batch.commit().catch(error => {
-      console.error("Error adding document: ", error);
-    });
+    await FirestoreApi.addCard(this.state.deckId, card);
 
     this.props.onLoading(false);
     this.props.history.goBack();
@@ -68,7 +32,7 @@ export default class Create extends React.Component {
       if (user) {
         this.props.onLoading(true);
 
-        this.getDecks(user.uid)
+        FirestoreApi.getDecks()
           .then(decks => {
             this.setState({
               decks,

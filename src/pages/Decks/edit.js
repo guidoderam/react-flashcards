@@ -1,7 +1,8 @@
 import React from "react";
 import { Container, Row, Col } from "reactstrap";
 import EditDeckFormContainer from "../../containers/EditDeckFormContainer";
-import { auth, db } from "../../firebase.js";
+import { auth } from "../../firebase.js";
+import FirestoreApi from "../../api/firestoreApi";
 
 export default class Edit extends React.Component {
   constructor(props) {
@@ -11,39 +12,12 @@ export default class Edit extends React.Component {
     };
   }
 
-  getDeck = async (deckId, userId) => {
-    return db
-      .collection("users")
-      .doc(userId)
-      .collection("decks")
-      .doc(deckId)
-      .get()
-      .then(deck => {
-        if (deck.exists) {
-          return { id: deck.id, ...deck.data() };
-        }
-
-        return false;
-      })
-      .catch(function(error) {
-        console.error("Error getting document: ", error);
-      });
-  };
-
-  saveDeck = deck => {
+  handleDeckUpdate = async deck => {
     this.props.onLoading(true);
 
-    db.collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .doc(this.props.match.params.id)
-      .update(deck)
-      .catch(error => {
-        console.error("Error adding document: ", error);
-      });
-
-    this.props.history.goBack();
+    await FirestoreApi.updateDeck(this.props.match.params.id, deck);
     this.props.onLoading(false);
+    this.props.history.goBack();
   };
 
   componentDidMount() {
@@ -51,7 +25,7 @@ export default class Edit extends React.Component {
       if (user) {
         this.props.onLoading(true);
 
-        this.getDeck(this.props.match.params.id, user.uid)
+        FirestoreApi.getDeck(this.props.match.params.id)
           .then(deck => {
             this.setState({ deck });
           })
@@ -68,7 +42,10 @@ export default class Edit extends React.Component {
           <Col>
             <h2>Edit Deck</h2>
             {deck ? (
-              <EditDeckFormContainer deck={deck} onSubmit={this.saveDeck} />
+              <EditDeckFormContainer
+                deck={deck}
+                onSubmit={this.handleDeckUpdate}
+              />
             ) : (
               <p>Loading...</p>
             )}

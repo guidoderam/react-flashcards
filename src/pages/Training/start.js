@@ -2,6 +2,7 @@ import React from "react";
 import Flashcard from "../../components/Flashcard/Flashcard";
 import { db, firebase, auth } from "../../firebase.js";
 import { Container, Col, Row } from "reactstrap";
+import FirestoreApi from "../../api/firestoreApi";
 
 export default class Start extends React.Component {
   constructor(props) {
@@ -13,54 +14,26 @@ export default class Start extends React.Component {
     };
   }
 
-  getDeck = async uid => {
+  getDeck = async () => {
     const { deck: deckId } = this.props.match.params;
 
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .doc(deckId)
-      .get()
-      .then(deck => {
-        if (deck.exists) {
-          return { id: deck.id, ...deck.data() };
-        }
-
-        return false;
-      })
-      .catch(function(error) {
-        console.error("Error getting document: ", error);
-      });
+    return await FirestoreApi.getDeck(deckId);
   };
 
-  getFlashcards = async (uid, deck) => {
+  getFlashcards = async deck => {
     const { deck: deckId } = this.props.match.params;
 
-    let availableCards = [];
+    let dueCards = [];
     if (deck && deck.cards) {
       const today = new Date();
       for (let [key, value] of Object.entries(deck.cards)) {
         if (value.dueDate === null || value.dueDate < today) {
-          availableCards.push(key);
+          dueCards.push(key);
         }
       }
     }
 
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .doc(deckId)
-      .collection("cards")
-      .where(firebase.firestore.FieldPath.documentId(), "in", availableCards)
-      .limit(30)
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          return { id: doc.id, ...doc.data() };
-        });
-      });
+    return FirestoreApi.getCardsByIds(deckId, dueCards);
   };
 
   handleRatingClick = e => {
@@ -89,101 +62,68 @@ export default class Start extends React.Component {
     return 0;
   };
 
-  saveResponse = (cardId, value) => {
+  saveResponse = async (cardId, value) => {
     const { deck } = this.props.match.params;
-
-    const cardRef = db
-      .collection("users")
-      .doc(auth.currentUser.uid)
-      .collection("decks")
-      .doc(deck)
-      .collection("cards")
-      .doc(cardId);
 
     // todo: change to transaction when they become available
     // for offline apps
-    cardRef.get().then(doc => {
-      const card = doc.data();
+    const card = await FirestoreApi.getCard(deck, cardId);
 
-      const grade = this.calcGrade(value);
-      let interval = 1;
-      const nextDay = new Date();
-      let ef = 2.5;
+    const grade = this.calcGrade(value);
+    let interval = 1;
+    const nextDay = new Date();
+    let ef = 2.5;
 
-      const batch = db.batch();
-
-      if (grade < 3) {
-        const updatedCard = {
-          repetition: 1,
-          nextDay,
-          new: false,
-          history: firebase.firestore.FieldValue.arrayUnion({
-            date: new Date(),
-            ef,
-            repetition: 1,
-            nextDay
-          })
-        };
-        batch.update(cardRef, updatedCard);
-
-        const deckRef = db
-          .collection("users")
-          .doc(auth.currentUser.uid)
-          .collection("decks")
-          .doc(deck);
-        batch.update(deckRef, {
-          [`cards.${cardRef.id}.dueDate`]: updatedCard.nextDay || null
-        });
-
-        batch.commit();
-        return;
-      }
-
-      if (card.ef && card.ef < 2.5) {
-        ef = card.ef + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
-
-        if (ef < 1.3) {
-          ef = 1.3;
-        }
-      }
-
-      let repetition = card.repetition || 0;
-
-      if (repetition === 0) {
-        interval = 1;
-      } else if (repetition === 1) {
-        interval = 3;
-      } else {
-        interval = Math.round(repetition * ef);
-      }
-
-      nextDay.setDate(nextDay.getDate() + interval);
-
+    if (grade < 3) {
       const updatedCard = {
-        ef,
-        repetition: repetition + 1,
+        repetition: 1,
         nextDay,
         new: false,
         history: firebase.firestore.FieldValue.arrayUnion({
           date: new Date(),
           ef,
-          repetition: repetition + 1,
+          repetition: 1,
           nextDay
         })
       };
-      batch.update(cardRef, updatedCard);
 
-      const deckRef = db
-        .collection("users")
-        .doc(auth.currentUser.uid)
-        .collection("decks")
-        .doc(deck);
-      batch.update(deckRef, {
-        [`cards.${cardRef.id}.dueDate`]: updatedCard.nextDay || null
-      });
+      return FirestoreApi.updateCard(deck, cardId, updatedCard);
+    }
 
-      batch.commit();
-    });
+    if (card.ef && card.ef < 2.5) {
+      ef = card.ef + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
+
+      if (ef < 1.3) {
+        ef = 1.3;
+      }
+    }
+
+    let repetition = card.repetition || 0;
+
+    if (repetition === 0) {
+      interval = 1;
+    } else if (repetition === 1) {
+      interval = 3;
+    } else {
+      interval = Math.round(repetition * ef);
+    }
+
+    nextDay.setDate(nextDay.getDate() + interval);
+
+    const updatedCard = {
+      ef,
+      repetition: repetition + 1,
+      nextDay,
+      new: false,
+      history: firebase.firestore.FieldValue.arrayUnion({
+        date: new Date(),
+        ef,
+        repetition: repetition + 1,
+        nextDay
+      })
+    };
+
+    return FirestoreApi.updateCard(deck, cardId, updatedCard);
   };
 
   nextCard = () => {
@@ -199,7 +139,7 @@ export default class Start extends React.Component {
 
         try {
           const deck = await this.getDeck(user.uid);
-          const cards = await this.getFlashcards(user.uid, deck);
+          const cards = await this.getFlashcards(deck);
           if (cards) {
             this.setState({
               cards: cards

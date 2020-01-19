@@ -1,6 +1,7 @@
 import React from "react";
-import { Button, Table, Card, Col, Container, Row } from "reactstrap";
-import { auth, db } from "../../firebase.js";
+import { Button, Col, Container, Row, Table } from "reactstrap";
+import FirestoreApi from "../../api/firestoreApi";
+import { auth } from "../../firebase.js";
 
 export default class Train extends React.Component {
   constructor(props) {
@@ -11,32 +12,26 @@ export default class Train extends React.Component {
     };
   }
 
-  getDecks = async uid => {
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          let newCards = 0;
-          let dueCards = 0;
+  getDecks = async () => {
+    const decks = await FirestoreApi.getDecks();
 
-          if (data.cards) {
-            const today = new Date();
+    return decks.map(deck => {
+      let newCards = 0;
+      let dueCards = 0;
 
-            newCards = Object.values(data.cards).reduce((acc, val) => {
-              return acc + (val.dueDate === null ? 1 : 0);
-            }, 0);
-            dueCards = Object.values(data.cards).reduce((acc, val) => {
-              return acc + (val.dueDate < today ? 1 : 0);
-            }, 0);
-          }
+      if (deck.cards) {
+        const today = new Date();
 
-          return { id: doc.id, ...data, newCards, dueCards };
-        });
-      });
+        newCards = Object.values(deck.cards).reduce((acc, val) => {
+          return acc + (val.dueDate === null ? 1 : 0);
+        }, 0);
+        dueCards = Object.values(deck.cards).reduce((acc, val) => {
+          return acc + (val.dueDate < today ? 1 : 0);
+        }, 0);
+      }
+
+      return { ...deck, newCards, dueCards };
+    });
   };
 
   handleStartBtnClick = e => {
@@ -48,7 +43,7 @@ export default class Train extends React.Component {
     auth.onAuthStateChanged(user => {
       if (user) {
         this.props.onLoading(true);
-        this.getDecks(user.uid)
+        this.getDecks()
           .then(decks => {
             this.setState({ decks });
           })
