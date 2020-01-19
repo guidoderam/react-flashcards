@@ -1,5 +1,5 @@
 import React from "react";
-import { Container } from "reactstrap";
+import { Container, Col, Row } from "reactstrap";
 import { auth } from "../../firebase.js";
 import EditCardFormContainer from "../../containers/EditCardFormContainer";
 import FirestoreApi from "../../api/firestoreApi";
@@ -13,12 +13,19 @@ export default class Edit extends React.Component {
     };
   }
 
-  saveCard = async card => {
+  handleSubmit = async formValues => {
     this.props.onLoading(true);
 
-    const { deck, card: cardId } = this.props.match.params;
+    const { deckId, cardId } = this.props.match.params;
 
-    await FirestoreApi.updateCard(deck, cardId, card);
+    const updateCard = {
+      question: formValues.question,
+      answer: formValues.answer,
+      readmore: formValues.readmore,
+      updated: new Date()
+    };
+
+    await FirestoreApi.updateCard(deckId, cardId, updateCard);
 
     this.props.onLoading(false);
     this.props.history.goBack();
@@ -28,8 +35,9 @@ export default class Edit extends React.Component {
     auth.onAuthStateChanged(async user => {
       if (user) {
         this.props.onLoading(true);
-        const { deck, card } = this.props.match.params;
-        await FirestoreApi.getCard(deck, card);
+        const { deckId, cardId } = this.props.match.params;
+        const card = await FirestoreApi.getCard(deckId, cardId);
+        this.setState({ card });
         this.props.onLoading(false);
       }
     });
@@ -38,15 +46,19 @@ export default class Edit extends React.Component {
   render() {
     return (
       <Container>
-        <h2>Edit</h2>
-        {this.state.card ? (
-          <EditCardFormContainer
-            card={this.state.card}
-            onSubmit={this.saveCard}
-          />
-        ) : (
-          <p>Loading...</p>
-        )}
+        <Row>
+          <Col>
+            <h2>Edit</h2>
+            {this.state.card ? (
+              <EditCardFormContainer
+                card={this.state.card}
+                onSubmit={this.handleSubmit}
+              />
+            ) : (
+              <p>Loading...</p>
+            )}
+          </Col>
+        </Row>
       </Container>
     );
   }

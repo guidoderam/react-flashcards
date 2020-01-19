@@ -58,7 +58,7 @@ class App extends React.Component {
               ></Route>
               <Route
                 exact
-                path="/decks/:deck/:card"
+                path="/decks/:deckId/:cardId"
                 render={props => (
                   <EditCard {...props} onLoading={this.handleLoading} />
                 )}

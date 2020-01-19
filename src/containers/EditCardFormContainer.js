@@ -82,18 +82,18 @@ export default class EditCardFormContainer extends React.Component {
       return;
     }
 
-    const updatedCard = {
+    const formValues = {
       question: this.state.question.toString("html"),
       answer: this.state.answer.toString("html"),
-      readmore: this.state.readmore,
-      updated: new Date() // todo: move to container
+      readmore: this.state.readmore
     };
 
-    this.props.onSubmit(updatedCard);
+    this.props.onSubmit(formValues);
   }
 
   componentDidMount() {
     const { id, question, answer, readmore } = this.props.card;
+
     this.setState({
       id,
       question: RichTextEditor.createValueFromString(question, "html"),
