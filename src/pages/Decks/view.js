@@ -120,9 +120,15 @@ export default class ViewDeck extends React.Component {
           </Col>
         </Row>
 
-        <Button color="primary" tag={Link} to="/cards/create">
-          Create new card
-        </Button>
+        {deck ? (
+          <Button
+            color="primary"
+            tag={Link}
+            to={`/cards/create?deckId=${deck.id}`}
+          >
+            Create new card
+          </Button>
+        ) : null}
       </Container>
     );
   }

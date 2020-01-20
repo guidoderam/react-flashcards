@@ -9,7 +9,8 @@ export default class Create extends React.Component {
     super(props);
 
     this.state = {
-      decks: []
+      decks: [],
+      deckId: null
     };
   }
 
@@ -31,18 +32,22 @@ export default class Create extends React.Component {
     this.props.history.goBack();
   };
 
-  componentDidMount() {
-    auth.onAuthStateChanged(user => {
+  async componentDidMount() {
+    auth.onAuthStateChanged(async user => {
       if (user) {
         this.props.onLoading(true);
 
-        FirestoreApi.getDecks()
-          .then(decks => {
-            this.setState({
-              decks
-            });
-          })
-          .finally(this.props.onLoading(false));
+        const decks = await FirestoreApi.getDecks();
+
+        const query = new URLSearchParams(this.props.location.search);
+        const deckId = query.get("deckId");
+
+        this.setState({
+          decks,
+          deckId
+        });
+
+        this.props.onLoading(false);
       }
     });
   }
@@ -55,6 +60,7 @@ export default class Create extends React.Component {
             <h2>Create a new card</h2>
             {this.state.decks.length > 0 ? (
               <CreateCardFormContainer
+                deckId={this.state.deckId}
                 decks={this.state.decks}
                 onSubmit={this.handleSubmit}
               />
