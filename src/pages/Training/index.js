@@ -74,9 +74,9 @@ export default class Train extends React.Component {
             <thead>
               <tr>
                 <th>Deck</th>
-                <th>Due</th>
-                <th>New</th>
-                <th></th>
+                <th style={{ width: "1px" }}>Due</th>
+                <th style={{ width: "1px" }}>New</th>
+                <th style={{ width: "1px" }}></th>
               </tr>
             </thead>
             <tbody>
