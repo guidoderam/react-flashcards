@@ -1,6 +1,6 @@
 import React from "react";
-import { Question } from "./Question";
-import Answer from "./Answer";
+import Front from "./Front";
+import Back from "./Back";
 import Rating from "./Rating";
 
 export default class Flashcard extends React.Component {
@@ -29,15 +29,12 @@ export default class Flashcard extends React.Component {
         >
           <div className="flip-card-front">
             <div className="flip-card-content">
-              <Question question={this.props.question} />
+              <Front text={this.props.front} />
             </div>
           </div>
           <div className="flip-card-back">
             <div className="flip-card-content">
-              <Answer
-                answer={this.props.answer}
-                onClick={this.props.onRatingClick}
-              />
+              <Back text={this.props.back} onClick={this.props.onRatingClick} />
             </div>
             <Rating onClick={this.props.onRatingClick} />
           </div>

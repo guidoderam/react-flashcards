@@ -16,12 +16,12 @@ export default class CreateCardFormContainer extends React.Component {
 
     this.state = {
       deckId: props.decks[0].id,
-      question: RichTextEditor.createEmptyValue(),
-      answer: RichTextEditor.createEmptyValue(),
+      front: RichTextEditor.createEmptyValue(),
+      back: RichTextEditor.createEmptyValue(),
       readmore: "",
       validate: {
-        question: "",
-        answer: "",
+        front: "",
+        back: "",
         readmore: ""
       }
     };
@@ -40,16 +40,16 @@ export default class CreateCardFormContainer extends React.Component {
     const { target } = event;
 
     await this.setState({
-      deck: target.value
+      deckId: target.value
     });
   };
 
-  handleQuestionChange = value => {
-    this.setState({ question: value });
+  handleFrontChange = value => {
+    this.setState({ front: value });
   };
 
-  handleAnswerChange = value => {
-    this.setState({ answer: value });
+  handleBackChange = value => {
+    this.setState({ back: value });
   };
 
   validateTextRequired(e) {
@@ -87,18 +87,18 @@ export default class CreateCardFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const question = this.state.question.toString("html");
-    const answer = this.state.answer.toString("html");
+    const front = this.state.front.toString("html");
+    const back = this.state.back.toString("html");
     const readmore = this.state.readmore;
     const deckId = this.state.deckId;
 
-    if (question.length === 0 || answer.length === 0) {
+    if (front.length === 0 || back.length === 0) {
       return;
     }
 
     const formValues = {
-      question,
-      answer,
+      front,
+      back,
       readmore,
       deckId
     };
@@ -107,7 +107,7 @@ export default class CreateCardFormContainer extends React.Component {
   }
 
   render() {
-    const { question, answer, readmore, deckId: deck } = this.state;
+    const { front, back, readmore, deckId } = this.state;
     const decks = this.props.decks.map(deck => (
       <option key={deck.id} value={deck.id}>
         {deck.name}
@@ -121,24 +121,21 @@ export default class CreateCardFormContainer extends React.Component {
             type="select"
             name="deck"
             id="deck"
-            value={deck}
+            value={deckId}
             onChange={e => this.handleDeckChange(e)}
           >
             {decks.length > 0 ? decks : null}
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label for="question">Question</Label>
-          <RichTextEditor
-            value={question}
-            onChange={this.handleQuestionChange}
-          />
-          <FormFeedback>Question cannot be empty</FormFeedback>
+          <Label for="front">Front</Label>
+          <RichTextEditor value={front} onChange={this.handleFrontChange} />
+          <FormFeedback>Front cannot be empty</FormFeedback>
         </FormGroup>
         <FormGroup>
-          <Label for="answer">Answer</Label>
-          <RichTextEditor value={answer} onChange={this.handleAnswerChange} />
-          <FormFeedback>Answer cannot be empty</FormFeedback>
+          <Label for="back">Back</Label>
+          <RichTextEditor value={back} onChange={this.handleBackChange} />
+          <FormFeedback>Back cannot be empty</FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="readmore">Read more</Label>
@@ -158,7 +155,7 @@ export default class CreateCardFormContainer extends React.Component {
           </FormText>
           <FormFeedback>Read more needs to be a valid URL</FormFeedback>
         </FormGroup>
-        <Button color="primary">Submit</Button>
+        <Button color="primary">Add</Button>
       </Form>
     );
   }

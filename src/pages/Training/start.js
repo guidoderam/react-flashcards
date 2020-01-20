@@ -176,12 +176,8 @@ export default class Start extends React.Component {
                   <Flashcard
                     onRatingClick={this.handleRatingClick}
                     key={this.state.cards[this.state.currentCardIndex].id}
-                    question={
-                      this.state.cards[this.state.currentCardIndex].question
-                    }
-                    answer={
-                      this.state.cards[this.state.currentCardIndex].answer
-                    }
+                    front={this.state.cards[this.state.currentCardIndex].front}
+                    back={this.state.cards[this.state.currentCardIndex].back}
                   />
                 }
               </div>

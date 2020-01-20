@@ -258,8 +258,8 @@ class FirestoreApi {
 
     cards.forEach(card => {
       batch.set(card.newCardRef, {
-        answer: card.answer,
-        question: card.question,
+        front: card.front,
+        back: card.back,
         readmore: card.readmore,
         created: card.created,
         updated: card.updated

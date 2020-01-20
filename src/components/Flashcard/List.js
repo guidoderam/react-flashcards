@@ -15,9 +15,8 @@ const List = props => {
 
   const cards = props.cards.map(card => (
     <tr key={card.id}>
-      <td>{truncate(card.question, 70, { stripTags: true })}</td>
-      <td>{truncate(card.answer, 70, { stripTags: true })}</td>
-      <td>{truncate(card.readmore, 15)}</td>
+      <td>{truncate(card.front, 70, { stripTags: true })}</td>
+      <td>{truncate(card.back, 70, { stripTags: true })}</td>
       <td>
         <Link to={`/decks/${deck}/${card.id}`}>
           <Button color="secondary">Edit</Button>
@@ -41,11 +40,10 @@ const List = props => {
         <Table>
           <thead>
             <tr>
-              <th>Question</th>
-              <th>Answer</th>
-              <th>Read more</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th>Front</th>
+              <th>Back</th>
+              <th style={{ width: "1px" }}>Edit</th>
+              <th style={{ width: "1px" }}>Delete</th>
             </tr>
           </thead>
           <tbody>{cards}</tbody>

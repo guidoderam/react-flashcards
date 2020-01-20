@@ -14,13 +14,13 @@ export default class EditCardFormContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      question: RichTextEditor.createEmptyValue(),
-      answer: RichTextEditor.createEmptyValue(),
+      front: RichTextEditor.createEmptyValue(),
+      back: RichTextEditor.createEmptyValue(),
       id: "",
       readmore: "",
       validate: {
-        question: "",
-        answer: "",
+        front: "",
+        back: "",
         readmore: ""
       }
     };
@@ -35,12 +35,12 @@ export default class EditCardFormContainer extends React.Component {
     });
   };
 
-  handleQuestionChange = value => {
-    this.setState({ question: value });
+  handleFrontChange = value => {
+    this.setState({ front: value });
   };
 
-  handleAnswerChange = value => {
-    this.setState({ answer: value });
+  handleBackChange = value => {
+    this.setState({ back: value });
   };
 
   validateTextRequired(e) {
@@ -78,13 +78,13 @@ export default class EditCardFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    if (this.state.question.length === 0 || this.state.answer.length === 0) {
+    if (this.state.front.length === 0 || this.state.back.length === 0) {
       return;
     }
 
     const formValues = {
-      question: this.state.question.toString("html"),
-      answer: this.state.answer.toString("html"),
+      front: this.state.front.toString("html"),
+      back: this.state.back.toString("html"),
       readmore: this.state.readmore
     };
 
@@ -92,33 +92,30 @@ export default class EditCardFormContainer extends React.Component {
   }
 
   componentDidMount() {
-    const { id, question, answer, readmore } = this.props.card;
+    const { id, front, back, readmore } = this.props.card;
 
     this.setState({
       id,
-      question: RichTextEditor.createValueFromString(question, "html"),
-      answer: RichTextEditor.createValueFromString(answer, "html"),
+      front: RichTextEditor.createValueFromString(front, "html"),
+      back: RichTextEditor.createValueFromString(back, "html"),
       readmore
     });
   }
 
   render() {
-    const { question, answer, readmore } = this.state;
+    const { front, back, readmore } = this.state;
 
     return (
       <Form onSubmit={e => this.handleSubmit(e)}>
         <FormGroup>
-          <Label for="question">Question</Label>
-          <RichTextEditor
-            value={question}
-            onChange={this.handleQuestionChange}
-          />
-          <FormFeedback>Question cannot be empty</FormFeedback>
+          <Label for="front">Front</Label>
+          <RichTextEditor value={front} onChange={this.handleFrontChange} />
+          <FormFeedback>Front cannot be empty</FormFeedback>
         </FormGroup>
         <FormGroup>
-          <Label for="answer">Answer</Label>
-          <RichTextEditor value={answer} onChange={this.handleAnswerChange} />
-          <FormFeedback>Answer cannot be empty</FormFeedback>
+          <Label for="back">Back</Label>
+          <RichTextEditor value={back} onChange={this.handleBackChange} />
+          <FormFeedback>Back cannot be empty</FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="readmore">Read more</Label>

@@ -19,8 +19,8 @@ export default class Create extends React.Component {
     const today = new Date();
 
     const newCard = {
-      question: formValues.question,
-      answer: formValues.answer,
+      front: formValues.front,
+      back: formValues.back,
       readmore: formValues.readmore,
       created: today,
       updated: today

@@ -19,8 +19,8 @@ export default class Edit extends React.Component {
     const { deckId, cardId } = this.props.match.params;
 
     const updateCard = {
-      question: formValues.question,
-      answer: formValues.answer,
+      front: formValues.front,
+      back: formValues.back,
       readmore: formValues.readmore,
       updated: new Date()
     };
