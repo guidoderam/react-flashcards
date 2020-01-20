@@ -1,43 +1,64 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button, Table } from "reactstrap";
-import { auth, db } from "../firebase";
+import {
+  Button,
+  Table,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
+} from "reactstrap";
+import { auth } from "../firebase";
+import FirestoreApi from "../api/firestoreApi";
 
 class DeckList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      decks: null
+      decks: null,
+      deleteModal: false,
+      selectedDeletionDeck: null
     };
   }
 
-  getDecks = async uid => {
-    return db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
-        });
-      });
+  removeDeckFromLocalState = deckId => {
+    const decks = this.state.decks.filter(deck => deck.id !== deckId);
+    this.setState({ decks });
   };
 
-  componentDidMount() {
-    auth.onAuthStateChanged(user => {
+  toggleDeleteModal = () =>
+    this.setState({ deleteModal: !this.state.deleteModal });
+
+  handleDeleteConfirmationClick = async () => {
+    const deckId = this.state.selectedDeletionDeck;
+
+    await FirestoreApi.deleteDeck(deckId);
+
+    this.removeDeckFromLocalState(deckId);
+
+    this.toggleDeleteModal();
+  };
+
+  handleDeleteClick = e => {
+    const deckId = e.target.dataset.deck;
+
+    this.setState({ selectedDeletionDeck: deckId });
+
+    this.toggleDeleteModal();
+  };
+
+  async componentDidMount() {
+    auth.onAuthStateChanged(async user => {
       if (user) {
         this.props.onLoading(true);
 
-        this.getDecks(user.uid)
-          .then(decks => {
-            this.setState({
-              decks
-            });
-          })
-          .finally(() => this.props.onLoading(false));
+        const decks = await FirestoreApi.getDecks();
+
+        this.setState({
+          decks
+        });
+
+        this.props.onLoading(false);
       }
     });
   }
@@ -45,6 +66,28 @@ class DeckList extends React.Component {
   render() {
     return (
       <>
+        <Modal
+          isOpen={this.state.deleteModal}
+          toggle={this.toggleDeleteModal}
+          backdrop={false}
+        >
+          <ModalHeader toggle={this.toggleDeleteModal}>
+            Confirm Deck Deletion
+          </ModalHeader>
+          <ModalBody>
+            Are you sure want to delete this deck? This action is irreversible.
+            All cards in this deck and the progress associated with these cards
+            will be purged.
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onClick={this.handleDeleteConfirmationClick}>
+              Delete Deck
+            </Button>{" "}
+            <Button color="secondary" onClick={this.toggleDeleteModal}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
         {this.state.decks === null ? (
           <p>Loading...</p>
         ) : this.state.decks.length > 0 ? (
@@ -72,6 +115,15 @@ class DeckList extends React.Component {
                       <Link to={`/decks/edit/${deck.id}`}>
                         <Button color="secondary">Edit</Button>
                       </Link>
+                    </td>
+                    <td>
+                      <Button
+                        color="danger"
+                        data-deck={deck.id}
+                        onClick={this.handleDeleteClick}
+                      >
+                        Delete
+                      </Button>
                     </td>
                   </tr>
                 );

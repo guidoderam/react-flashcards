@@ -64,6 +64,15 @@ class FirestoreApi {
       .update(deck);
   };
 
+  static deleteDeck = async (deckId, uid = auth.currentUser.uid) => {
+    return db
+      .collection("users")
+      .doc(uid)
+      .collection("decks")
+      .doc(deckId)
+      .delete();
+  };
+
   static getCards = async (deckId, uid = auth.currentUser.uid) => {
     return db
       .collection("users")
