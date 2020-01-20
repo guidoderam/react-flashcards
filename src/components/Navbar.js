@@ -83,7 +83,7 @@ const Navbar = () => {
                     active={window.location.href.indexOf("/decks") !== -1}
                     activeClassName="active"
                   >
-                    My Cards
+                    My Decks
                   </NavLink>
                 </NavItem>
                 <NavItem>

@@ -257,7 +257,9 @@ class FirestoreApi {
       });
     });
 
-    return batch.commit();
+    await batch.commit();
+
+    return newDeckRef.id;
   };
 }
 

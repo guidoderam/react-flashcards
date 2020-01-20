@@ -13,7 +13,12 @@ export default class SharedDecks extends React.Component {
   }
 
   handleDeckImport = async deckId => {
-    await FirestoreApi.importDeck(deckId);
+    this.props.onLoading(true);
+
+    const newDeckId = await FirestoreApi.importDeck(deckId);
+    this.props.onLoading(false);
+
+    this.props.history.push(`/decks/${newDeckId}`);
   };
 
   componentDidMount() {
