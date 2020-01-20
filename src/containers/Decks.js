@@ -1,13 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardTitle,
-  CardDeck,
-  CardText
-} from "reactstrap";
+import { Button, Table } from "reactstrap";
 import { auth, db } from "../firebase";
 
 class DeckList extends React.Component {
@@ -55,34 +48,36 @@ class DeckList extends React.Component {
         {this.state.decks === null ? (
           <p>Loading...</p>
         ) : this.state.decks.length > 0 ? (
-          <CardDeck>
-            {this.state.decks.map(deck => {
-              return (
-                <Card key={deck.id}>
-                  <CardBody>
-                    <CardTitle>{deck.name}</CardTitle>
-                    <CardText>
-                      Cards: {deck.cards ? Object.values(deck.cards).length : 0}
-                    </CardText>
-                    <CardText>
-                      Shared Deck: {deck.isPublic ? "Yes" : "No"}
-                    </CardText>
-                    {deck.description ? (
-                      <CardText>{deck.description}</CardText>
-                    ) : null}
-                    <Link to={`/decks/${deck.id}`}>
-                      <Button color="primary" className="mr-3">
-                        View
-                      </Button>
-                    </Link>
-                    <Link to={`/decks/edit/${deck.id}`}>
-                      <Button color="secondary">Edit</Button>
-                    </Link>
-                  </CardBody>
-                </Card>
-              );
-            })}
-          </CardDeck>
+          <Table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th style={{ width: "1px" }}>Cards</th>
+                <th style={{ width: "1px" }}></th>
+                <th style={{ width: "1px" }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.decks.map(deck => {
+                return (
+                  <tr key={deck.id}>
+                    <td>{deck.name}</td>
+                    <td>{deck.cards ? Object.values(deck.cards).length : 0}</td>
+                    <td>
+                      <Link to={`/decks/${deck.id}`}>
+                        <Button color="primary">View</Button>
+                      </Link>
+                    </td>
+                    <td>
+                      <Link to={`/decks/edit/${deck.id}`}>
+                        <Button color="secondary">Edit</Button>
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         ) : (
           <p>No decks</p>
         )}

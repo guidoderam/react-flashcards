@@ -1,8 +1,8 @@
 import React from "react";
-import Flashcard from "../../components/Flashcard/Flashcard";
-import { db, firebase, auth } from "../../firebase.js";
-import { Container, Col, Row } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import FirestoreApi from "../../api/firestoreApi";
+import Flashcard from "../../components/Flashcard/Flashcard";
+import { auth, firebase } from "../../firebase.js";
 
 export default class Start extends React.Component {
   constructor(props) {

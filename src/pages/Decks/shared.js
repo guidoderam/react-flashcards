@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardText,
-  CardTitle,
-  Col,
-  Container,
-  Row
-} from "reactstrap";
+import { Button, Col, Container, Row, Table } from "reactstrap";
 import FirestoreApi from "../../api/firestoreApi";
 import { auth } from "../../firebase.js";
 
@@ -48,32 +39,39 @@ export default class SharedDecks extends React.Component {
         <Row>
           <Col>
             <h1>Shared Decks</h1>
-            {decks
-              ? decks.map(deck => {
-                  return (
-                    <Card key={deck.id}>
-                      <CardBody>
-                        <CardTitle>{deck.name}</CardTitle>
-                        <CardText>
-                          Cards:{" "}
-                          {deck.cards ? Object.values(deck.cards).length : 0}
-                        </CardText>
-                        {deck.description ? (
-                          <CardText>{deck.description}</CardText>
-                        ) : null}
-                        <Button
-                          onClick={() => {
-                            this.handleDeckImport(deck.id);
-                          }}
-                          color="primary"
-                        >
-                          Import
-                        </Button>
-                      </CardBody>
-                    </Card>
-                  );
-                })
-              : null}
+            <Table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th style={{ width: "1px" }}>Cards</th>
+                  <th style={{ width: "1px" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {decks
+                  ? decks.map(deck => {
+                      return (
+                        <tr key={deck.id}>
+                          <td>{deck.name}</td>
+                          <td>
+                            {deck.cards ? Object.values(deck.cards).length : 0}
+                          </td>
+                          <td>
+                            <Button
+                              onClick={() => {
+                                this.handleDeckImport(deck.id);
+                              }}
+                              color="primary"
+                            >
+                              Import
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  : null}
+              </tbody>
+            </Table>
           </Col>
         </Row>
       </Container>
