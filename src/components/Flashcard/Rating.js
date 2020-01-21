@@ -3,17 +3,17 @@ import { Col, Row } from "reactstrap";
 
 const Rating = props => {
   return (
-    <Row className="rating" onClick={props.onClick}>
-      <Col className="bg-danger">
+    <>
+      <Col xs="4" className="rating bg-danger">
         <span id="star-1" className="fa fa-frown-o"></span>
       </Col>
-      <Col className="bg-warning">
+      <Col xs="4" className="rating bg-warning">
         <span id="star-2" className="fa fa-meh-o"></span>
       </Col>
-      <Col className="bg-success">
+      <Col xs="4" className="rating bg-success">
         <span id="star-3" className="fa fa-smile-o"></span>
       </Col>
-    </Row>
+    </>
   );
 };
 export default Rating;

@@ -1,7 +1,6 @@
 import React from "react";
-import Front from "./Front";
-import Back from "./Back";
 import Rating from "./Rating";
+import { Col, Row } from "reactstrap";
 
 export default class Flashcard extends React.Component {
   constructor(props) {
@@ -14,31 +13,33 @@ export default class Flashcard extends React.Component {
   handleClick = e => {
     e.preventDefault();
 
-    this.setState(state => ({
+    this.setState({
       flipped: !this.state.flipped
-    }));
+    });
   };
 
   render() {
     return (
-      <div className="flip-card" onClick={this.handleClick}>
-        <div
-          className={
-            this.state.flipped ? "flip-card-inner flipped" : "flip-card-inner"
-          }
-        >
-          <div className="flip-card-front">
-            <div className="flip-card-content">
-              <Front text={this.props.front} />
-            </div>
-          </div>
-          <div className="flip-card-back">
-            <div className="flip-card-content">
-              <Back text={this.props.back} onClick={this.props.onRatingClick} />
-            </div>
+      <div className="flashcard" onClick={this.handleClick}>
+        <Row className="flashcard__header">
+          <Col>
+            <h2>{this.state.flipped ? "Back" : "Front"}</h2>
+          </Col>
+        </Row>
+        <Row className="flashcard__content">
+          <Col>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: this.state.flipped ? this.props.back : this.props.front
+              }}
+            ></div>
+          </Col>
+        </Row>
+        {this.state.flipped ? (
+          <Row className="flashcard__footer" onClick={this.props.onRatingClick}>
             <Rating onClick={this.props.onRatingClick} />
-          </div>
-        </div>
+          </Row>
+        ) : null}
       </div>
     );
   }

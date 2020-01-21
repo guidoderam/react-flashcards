@@ -158,29 +158,25 @@ export default class Start extends React.Component {
 
   render() {
     return (
-      <>
+      <Container>
         {this.state.cards === null ? (
-          <Container>
-            <Row>
-              <Col>
-                <p>Loading...</p>
-              </Col>
-            </Row>
-          </Container>
+          <Row>
+            <Col>
+              <p>Loading...</p>
+            </Col>
+          </Row>
         ) : this.state.cards &&
           this.state.currentCardIndex < this.state.cards.length ? (
           <Row>
             <Col>
-              <div className="flip-container">
-                {
-                  <Flashcard
-                    onRatingClick={this.handleRatingClick}
-                    key={this.state.cards[this.state.currentCardIndex].id}
-                    front={this.state.cards[this.state.currentCardIndex].front}
-                    back={this.state.cards[this.state.currentCardIndex].back}
-                  />
-                }
-              </div>
+              {
+                <Flashcard
+                  onRatingClick={this.handleRatingClick}
+                  key={this.state.cards[this.state.currentCardIndex].id}
+                  front={this.state.cards[this.state.currentCardIndex].front}
+                  back={this.state.cards[this.state.currentCardIndex].back}
+                />
+              }
               <div className="info">
                 <span>
                   {this.state.currentCardIndex + 1} / {this.state.cards.length}
@@ -189,19 +185,17 @@ export default class Start extends React.Component {
             </Col>
           </Row>
         ) : (
-          <Container>
-            <Row>
-              <Col>
-                <h1>You're done!</h1>
-                <p>
-                  This was it for this training session. Check back tomorrow for
-                  more cards!
-                </p>
-              </Col>
-            </Row>
-          </Container>
+          <Row>
+            <Col>
+              <h1>You're done!</h1>
+              <p>
+                This was it for this training session. Check back tomorrow for
+                more cards!
+              </p>
+            </Col>
+          </Row>
         )}
-      </>
+      </Container>
     );
   }
 }
