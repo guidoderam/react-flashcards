@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Col, Container, Row } from "reactstrap";
-import DeckList from "../../containers/Decks";
+import DeckList from "../../containers/DeckList";
 import { auth } from "../../firebase.js";
 import FirestoreApi from "../../api/firestoreApi";
+import * as ROUTES from "../../constants/routes";
 
 export default class Decks extends React.Component {
   constructor(props) {
@@ -41,7 +42,7 @@ export default class Decks extends React.Component {
         </Row>
         <Row>
           <Col>
-            <Button color="primary" tag={Link} to="/decks/create">
+            <Button color="primary" tag={Link} to={ROUTES.DECK_CREATE}>
               Create new deck
             </Button>
           </Col>

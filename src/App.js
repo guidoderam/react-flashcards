@@ -1,19 +1,20 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
-import MyNavbar from "./components/Navbar";
+import Navigation from "./components/Navigation";
 import LoadingOverlay from "./components/overlay/LoadingOverlay";
-import Decks from "./pages/Decks/list";
-import SharedDecks from "./pages/Decks/shared";
-import CreateDeck from "./pages/Decks/create";
-import EditDeck from "./pages/Decks/edit";
+import * as ROUTES from "./constants/routes";
 import CreateCard from "./pages/Cards/create";
 import EditCard from "./pages/Cards/edit";
+import CreateDeck from "./pages/Decks/create";
+import EditDeck from "./pages/Decks/edit";
+import Decks from "./pages/Decks/decks";
+import SharedDecks from "./pages/Decks/shared";
+import Deck from "./pages/Decks/deck";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Train from "./pages/Training";
 import Start from "./pages/Training/start";
-import ViewDeck from "./pages/Decks/view";
 
 class App extends React.Component {
   constructor(props) {
@@ -33,74 +34,74 @@ class App extends React.Component {
       <>
         <LoadingOverlay isLoading={this.state.isLoading} />
         <Router>
-          <MyNavbar />
+          <Navigation />
           <main role="main">
             <Switch>
-              <Route exact path="/">
+              <Route exact path={ROUTES.HOME}>
                 <Home />
               </Route>
-              <Route exact path="/signin">
+              <Route exact path={ROUTES.SIGN_IN}>
                 <SignIn />
               </Route>
               <Route
                 exact
-                path="/decks/create"
+                path={ROUTES.DECK_CREATE}
                 render={props => (
                   <CreateDeck {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/decks/edit/:id"
+                path={ROUTES.DECK_EDIT}
                 render={props => (
                   <EditDeck {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/decks/:deckId/:cardId"
+                path={ROUTES.CARD_EDIT}
                 render={props => (
                   <EditCard {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/decks/shared"
+                path={ROUTES.DECKS_SHARED}
                 render={props => (
                   <SharedDecks {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/decks/:deckId"
+                path={ROUTES.DECK}
                 render={props => (
-                  <ViewDeck {...props} onLoading={this.handleLoading} />
+                  <Deck {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/cards/create/"
+                path={ROUTES.CARD_CREATE}
                 render={props => (
                   <CreateCard {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/decks"
+                path={ROUTES.DECKS}
                 render={props => (
                   <Decks {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/training"
+                path={ROUTES.TRAIN}
                 render={props => (
                   <Train {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
                 exact
-                path="/training/start/:deckId?"
+                path={ROUTES.TRAIN_START}
                 render={props => (
                   <Start {...props} onLoading={this.handleLoading} />
                 )}

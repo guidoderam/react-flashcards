@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Container, Row, Table } from "reactstrap";
 import FirestoreApi from "../../api/firestoreApi";
 import { auth } from "../../firebase.js";
+import * as ROUTES from "../../constants/routes";
 
 export default class SharedDecks extends React.Component {
   constructor(props) {
@@ -18,7 +19,8 @@ export default class SharedDecks extends React.Component {
     const newDeckId = await FirestoreApi.importDeck(deckId);
     this.props.onLoading(false);
 
-    this.props.history.push(`/decks/${newDeckId}`);
+    const deckRoute = ROUTES.DECK.replace(":deckId", newDeckId);
+    this.props.history.push(deckRoute);
   };
 
   componentDidMount() {

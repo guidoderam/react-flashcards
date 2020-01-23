@@ -15,7 +15,7 @@ export default class Edit extends React.Component {
   handleDeckUpdate = async deck => {
     this.props.onLoading(true);
 
-    await FirestoreApi.updateDeck(this.props.match.params.id, deck);
+    await FirestoreApi.updateDeck(this.props.match.params.deckId, deck);
     this.props.onLoading(false);
     this.props.history.goBack();
   };
@@ -25,7 +25,7 @@ export default class Edit extends React.Component {
       if (user) {
         this.props.onLoading(true);
 
-        FirestoreApi.getDeck(this.props.match.params.id)
+        FirestoreApi.getDeck(this.props.match.params.deckId)
           .then(deck => {
             this.setState({ deck });
           })

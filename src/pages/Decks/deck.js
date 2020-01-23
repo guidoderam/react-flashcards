@@ -9,12 +9,13 @@ import {
   CardTitle,
   CardText
 } from "reactstrap";
-import List from "../../components/Flashcard/List";
+import CardList from "../../components/CardList";
 import { auth } from "../../firebase.js";
 import { Link } from "react-router-dom";
 import FirestoreApi from "../../api/firestoreApi";
+import * as ROUTES from "../../constants/routes";
 
-export default class ViewDeck extends React.Component {
+export default class Deck extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -95,7 +96,7 @@ export default class ViewDeck extends React.Component {
                     {deck.description ? (
                       <CardText>{deck.description}</CardText>
                     ) : null}
-                    <Link to={`/decks/edit/${deck.id}`}>
+                    <Link to={ROUTES.DECK_EDIT.replace(":deckId", deck.id)}>
                       <Button color="secondary">Edit</Button>
                     </Link>
                   </CardBody>
@@ -108,7 +109,7 @@ export default class ViewDeck extends React.Component {
           <Col>
             <h2>Cards</h2>
             {this.state.cards !== null ? (
-              <List
+              <CardList
                 deck={this.state.selectedDeck}
                 cards={this.state.cards}
                 onDeleteClick={this.handleDeleteClick}
@@ -124,7 +125,7 @@ export default class ViewDeck extends React.Component {
           <Button
             color="primary"
             tag={Link}
-            to={`/cards/create?deckId=${deck.id}`}
+            to={`${ROUTES.CARD_CREATE}?deckId=${deck.id}`}
           >
             Create new card
           </Button>

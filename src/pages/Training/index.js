@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Container, Row, Table } from "reactstrap";
 import FirestoreApi from "../../api/firestoreApi";
 import { auth } from "../../firebase.js";
+import * as ROUTES from "../../constants/routes";
 
 export default class Train extends React.Component {
   constructor(props) {
@@ -35,8 +36,9 @@ export default class Train extends React.Component {
   };
 
   handleStartBtnClick = e => {
-    const deck = e.target.dataset.deck;
-    this.props.history.push(`/training/start/${deck}`);
+    const deckId = e.target.dataset.deck;
+    const startRoute = ROUTES.TRAIN_START.replace(":deckId?", deckId);
+    this.props.history.push(startRoute);
   };
 
   componentDidMount() {

@@ -11,8 +11,9 @@ import {
   NavLink
 } from "reactstrap";
 import { auth } from "../firebase";
+import * as ROUTES from "../constants/routes";
 
-const Navbar = () => {
+const Navigation = () => {
   const [collapsed, setCollapsed] = useState(true);
 
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -45,7 +46,7 @@ const Navbar = () => {
       className="pt-3 pb-3 text-uppercase"
     >
       <Container>
-        <NavbarBrand tag={RRNavLink} to="/">
+        <NavbarBrand tag={RRNavLink} to={ROUTES.HOME}>
           React-Flashcards
         </NavbarBrand>
         <NavbarToggler onClick={toggleNavbar} className="mr-2" />
@@ -57,8 +58,8 @@ const Navbar = () => {
                   <NavLink
                     tag={RRNavLink}
                     exact
-                    to="/training"
-                    active={window.location.href.indexOf("/training") !== -1}
+                    to={ROUTES.TRAIN}
+                    active={window.location.href.indexOf(ROUTES.TRAIN) !== -1}
                     activeClassName="active"
                   >
                     Train
@@ -69,7 +70,7 @@ const Navbar = () => {
                   <NavLink
                     tag={RRNavLink}
                     exact
-                    to="/cards/create"
+                    to={ROUTES.CARD_CREATE}
                     activeClassName="active"
                   >
                     Add Card
@@ -79,8 +80,8 @@ const Navbar = () => {
                   <NavLink
                     tag={RRNavLink}
                     exact
-                    to="/decks"
-                    active={window.location.href.indexOf("/decks") !== -1}
+                    to={ROUTES.DECKS}
+                    active={window.location.href.indexOf(ROUTES.DECKS) !== -1}
                     activeClassName="active"
                   >
                     My Decks
@@ -90,7 +91,7 @@ const Navbar = () => {
                   <NavLink
                     tag={RRNavLink}
                     exact
-                    to="/decks/shared"
+                    to={ROUTES.DECKS_SHARED}
                     activeClassName="active"
                   >
                     Shared Decks
@@ -100,11 +101,11 @@ const Navbar = () => {
             ) : null}
             <NavItem>
               {isSignedIn ? (
-                <NavLink tag={RRNavLink} to="/signout" onClick={signOut}>
+                <NavLink tag={RRNavLink} to={ROUTES.SIGN_OUT} onClick={signOut}>
                   Sign Out
                 </NavLink>
               ) : (
-                <NavLink tag={RRNavLink} to="/signin">
+                <NavLink tag={RRNavLink} to={ROUTES.SIGN_IN}>
                   Sign In
                 </NavLink>
               )}
@@ -116,4 +117,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navigation;

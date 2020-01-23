@@ -1,0 +1,12 @@
+export const HOME = "/";
+export const SIGN_IN = "/signin";
+export const SIGN_OUT = "/signout";
+export const TRAIN = "/training";
+export const TRAIN_START = "/training/start/:deckId?";
+export const DECKS = "/decks";
+export const DECK = "/decks/:deckId";
+export const DECK_CREATE = "/decks/create";
+export const DECK_EDIT = "/decks/edit/:deckId";
+export const DECKS_SHARED = "/decks/shared";
+export const CARD_CREATE = "/cards/create";
+export const CARD_EDIT = "/decks/:deckId/:cardId";

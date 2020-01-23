@@ -9,16 +9,22 @@ import {
   Table
 } from "reactstrap";
 import truncate from "truncate-html";
+import * as ROUTES from "../constants/routes";
 
-const List = props => {
-  let { deck } = useParams();
+const CardList = props => {
+  let { deckId } = useParams();
 
   const cards = props.cards.map(card => (
     <tr key={card.id}>
       <td>{truncate(card.front, 70, { stripTags: true })}</td>
       <td>{truncate(card.back, 70, { stripTags: true })}</td>
       <td>
-        <Link to={`/decks/${deck}/${card.id}`}>
+        <Link
+          to={ROUTES.CARD_EDIT.replace(":deckId", deckId).replace(
+            ":cardId",
+            card.id
+          )}
+        >
           <Button color="secondary">Edit</Button>
         </Link>
       </td>
@@ -70,4 +76,4 @@ const List = props => {
   );
 };
 
-export default List;
+export default CardList;
