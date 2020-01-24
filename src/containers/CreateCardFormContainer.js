@@ -15,7 +15,7 @@ export default class CreateCardFormContainer extends React.Component {
     super(props);
 
     this.state = {
-      deckId: props.deckId || props.decks[0],
+      deckId: props.deckId || props.decks[0].id,
       front: RichTextEditor.createEmptyValue(),
       back: RichTextEditor.createEmptyValue(),
       readmore: "",

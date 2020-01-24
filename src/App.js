@@ -10,11 +10,11 @@ import CreateDeck from "./pages/Decks/create";
 import EditDeck from "./pages/Decks/edit";
 import Decks from "./pages/Decks/decks";
 import SharedDecks from "./pages/Decks/shared";
-import Deck from "./pages/Decks/deck";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import Train from "./pages/Training";
 import Start from "./pages/Training/start";
+import { withAuthentication } from "./components/Session";
 
 class App extends React.Component {
   constructor(props) {
@@ -37,12 +37,14 @@ class App extends React.Component {
           <Navigation />
           <main role="main">
             <Switch>
-              <Route exact path={ROUTES.HOME}>
-                <Home />
-              </Route>
-              <Route exact path={ROUTES.SIGN_IN}>
-                <SignIn />
-              </Route>
+              <Route exact path={ROUTES.HOME} Component={Home}></Route>
+              <Route
+                exact
+                path={ROUTES.SIGN_IN}
+                render={props => (
+                  <SignIn {...props} onLoading={this.handleLoading} />
+                )}
+              ></Route>
               <Route
                 exact
                 path={ROUTES.DECK_CREATE}
@@ -69,13 +71,6 @@ class App extends React.Component {
                 path={ROUTES.DECKS_SHARED}
                 render={props => (
                   <SharedDecks {...props} onLoading={this.handleLoading} />
-                )}
-              ></Route>
-              <Route
-                exact
-                path={ROUTES.DECK}
-                render={props => (
-                  <Deck {...props} onLoading={this.handleLoading} />
                 )}
               ></Route>
               <Route
@@ -114,4 +109,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default withAuthentication(App);

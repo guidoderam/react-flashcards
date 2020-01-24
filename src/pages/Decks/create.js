@@ -1,16 +1,19 @@
 import React from "react";
-import { Container, Row, Col } from "reactstrap";
-import CreateDeckFormContainer from "../../containers/CreateDeckFormContainer";
 import { useHistory } from "react-router-dom";
-import FirestoreApi from "../../api/firestoreApi";
+import { Col, Container, Row } from "reactstrap";
+import { FirebaseContext } from "../../components/Firebase";
+import { withAuthorization } from "../../components/Session";
+import CreateDeckFormContainer from "../../containers/CreateDeckFormContainer";
 
 const Create = props => {
   const history = useHistory();
 
+  const firebase = React.useContext(FirebaseContext);
+
   const saveDeck = async deck => {
     props.onLoading(true);
 
-    await FirestoreApi.addDeck(deck);
+    await firebase.addDeck(deck);
 
     props.onLoading(false);
     history.goBack();
@@ -28,4 +31,4 @@ const Create = props => {
   );
 };
 
-export default Create;
+export default withAuthorization()(Create);

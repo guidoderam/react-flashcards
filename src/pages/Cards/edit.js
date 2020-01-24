@@ -1,22 +1,22 @@
-import React from "react";
-import { Container, Col, Row } from "reactstrap";
-import { auth } from "../../firebase.js";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Col, Container, Row } from "reactstrap";
+import { FirebaseContext } from "../../components/Firebase";
+import { AuthUserContext, withAuthorization } from "../../components/Session";
 import EditCardFormContainer from "../../containers/EditCardFormContainer";
-import FirestoreApi from "../../api/firestoreApi";
 
-export default class Edit extends React.Component {
-  constructor(props) {
-    super(props);
+const Edit = props => {
+  const { onLoading } = props;
 
-    this.state = {
-      card: null
-    };
-  }
+  const [card, setCard] = useState(null);
 
-  handleSubmit = async formValues => {
-    this.props.onLoading(true);
+  const authUser = React.useContext(AuthUserContext);
+  const firebase = React.useContext(FirebaseContext);
 
-    const { deckId, cardId } = this.props.match.params;
+  const { deckId, cardId } = useParams();
+
+  const handleSubmit = async formValues => {
+    props.onLoading(true);
 
     const updateCard = {
       front: formValues.front,
@@ -25,41 +25,43 @@ export default class Edit extends React.Component {
       updated: new Date()
     };
 
-    await FirestoreApi.updateCard(deckId, cardId, updateCard);
+    await firebase.updateCard(deckId, cardId, updateCard);
 
-    this.props.onLoading(false);
-    this.props.history.goBack();
+    props.onLoading(false);
+    props.history.goBack();
   };
 
-  async componentDidMount() {
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        this.props.onLoading(true);
-        const { deckId, cardId } = this.props.match.params;
-        const card = await FirestoreApi.getCard(deckId, cardId);
-        this.setState({ card });
-        this.props.onLoading(false);
-      }
-    });
-  }
+  useEffect(() => {
+    const getData = async () => {
+      onLoading(true);
 
-  render() {
-    return (
-      <Container>
-        <Row>
-          <Col>
-            <h2>Edit</h2>
-            {this.state.card ? (
-              <EditCardFormContainer
-                card={this.state.card}
-                onSubmit={this.handleSubmit}
-              />
-            ) : (
-              <p>Loading...</p>
-            )}
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-}
+      const card = await firebase.getCard(deckId, cardId);
+
+      setCard(card);
+      console.log(card);
+
+      onLoading(false);
+    };
+
+    if (authUser) {
+      getData();
+    }
+  }, [authUser, firebase, deckId, cardId, onLoading]);
+
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <h2>Edit</h2>
+          {card ? (
+            <EditCardFormContainer card={card} onSubmit={handleSubmit} />
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default withAuthorization()(Edit);

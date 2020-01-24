@@ -1,122 +1,108 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, Col, Container, Row, Table } from "reactstrap";
-import FirestoreApi from "../../api/firestoreApi";
-import { auth } from "../../firebase.js";
 import * as ROUTES from "../../constants/routes";
+import { FirebaseContext } from "../../components/Firebase";
+import { AuthUserContext, withAuthorization } from "../../components/Session";
 
-export default class Train extends React.Component {
-  constructor(props) {
-    super(props);
+const Train = props => {
+  const { onLoading } = props;
 
-    this.state = {
-      decks: null
-    };
-  }
+  const [decks, setDecks] = useState(null);
 
-  getDecks = async () => {
-    const decks = await FirestoreApi.getDecks();
+  const authUser = React.useContext(AuthUserContext);
+  const firebase = React.useContext(FirebaseContext);
 
-    return decks.map(deck => {
-      let newCards = 0;
-      let dueCards = 0;
+  const history = useHistory();
 
-      if (deck.cards) {
-        const today = new Date();
-
-        newCards = Object.values(deck.cards).reduce((acc, val) => {
-          return acc + (val.dueDate === null ? 1 : 0);
-        }, 0);
-        dueCards = Object.values(deck.cards).reduce((acc, val) => {
-          return acc + (val.dueDate < today ? 1 : 0);
-        }, 0);
-      }
-
-      return { ...deck, newCards, dueCards };
-    });
-  };
-
-  handleStartBtnClick = e => {
+  const handleStartBtnClick = e => {
     const deckId = e.target.dataset.deck;
     const startRoute = ROUTES.TRAIN_START.replace(":deckId?", deckId);
-    this.props.history.push(startRoute);
+    history.push(startRoute);
   };
 
-  componentDidMount() {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        this.props.onLoading(true);
-        this.getDecks()
-          .then(decks => {
-            this.setState({ decks });
-          })
-          .finally(() => {
-            this.props.onLoading(false);
-          });
-      }
-    });
-  }
+  useEffect(() => {
+    const getDecks = async () => {
+      onLoading(true);
 
-  render() {
-    return (
-      <Container>
-        <Row>
-          <Col>
-            <h2>Welcome</h2>
-            {this.state.decks == null ? (
-              <p>Loading...</p>
-            ) : this.state.decks.length > 0 ? (
-              <p>You have cards due for these decks.</p>
-            ) : (
-              <p>You have finished all decks for now.</p>
-            )}
-          </Col>
-        </Row>
-        {this.state.decks ? (
-          <Table>
-            <thead>
-              <tr>
-                <th>Deck</th>
-                <th style={{ width: "1px" }}>Due</th>
-                <th style={{ width: "1px" }}>New</th>
-                <th style={{ width: "1px" }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.decks.map(deck => {
-                return (
-                  <tr key={deck.id}>
-                    <td>{deck.name}</td>
-                    <td>{deck.dueCards}</td>
-                    <td>{deck.newCards}</td>
-                    <td>
-                      <Button
-                        color="primary"
-                        data-deck={deck.id}
-                        disabled={deck.dueCards === 0 && deck.newCards === 0}
-                        onClick={this.handleStartBtnClick}
-                      >
-                        Start
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        ) : null}
-        {/*         <Row>
-          <Col xs="12">
-            <Button
-              className="btn-start"
-              color="primary"
-              onClick={this.handleStartClick}
-              disabled={this.state.startButtonDisabled}
-            >
-              Train on all decks
-            </Button>
-          </Col>
-        </Row> */}
-      </Container>
-    );
-  }
-}
+      const decks = await firebase.getDecks();
+      const decksWithCardDueNew = decks.map(deck => {
+        let newCards = 0;
+        let dueCards = 0;
+
+        if (deck.cards) {
+          const today = new Date();
+
+          newCards = Object.values(deck.cards).reduce((acc, val) => {
+            return acc + (val.dueDate === null ? 1 : 0);
+          }, 0);
+          dueCards = Object.values(deck.cards).reduce((acc, val) => {
+            return acc + (val.dueDate < today ? 1 : 0);
+          }, 0);
+        }
+
+        return { ...deck, newCards, dueCards };
+      });
+
+      setDecks(decksWithCardDueNew);
+
+      onLoading(false);
+    };
+
+    if (authUser) {
+      getDecks();
+    }
+  }, [authUser, firebase, onLoading]);
+
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <h2>Welcome</h2>
+          {decks == null ? (
+            <p>Loading...</p>
+          ) : decks.length > 0 ? (
+            <p>You have cards due for these decks.</p>
+          ) : (
+            <p>You have finished all decks for now.</p>
+          )}
+        </Col>
+      </Row>
+      {decks ? (
+        <Table>
+          <thead>
+            <tr>
+              <th>Deck</th>
+              <th style={{ width: "1px" }}>Due</th>
+              <th style={{ width: "1px" }}>New</th>
+              <th style={{ width: "1px" }}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {decks.map(deck => {
+              return (
+                <tr key={deck.id}>
+                  <td>{deck.name}</td>
+                  <td>{deck.dueCards}</td>
+                  <td>{deck.newCards}</td>
+                  <td>
+                    <Button
+                      color="primary"
+                      data-deck={deck.id}
+                      disabled={deck.dueCards === 0 && deck.newCards === 0}
+                      onClick={handleStartBtnClick}
+                    >
+                      Start
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      ) : null}
+    </Container>
+  );
+};
+
+export default withAuthorization()(Train);

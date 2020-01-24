@@ -1,43 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
-import FirestoreApi from "../../api/firestoreApi";
+import { FirebaseContext } from "../../components/Firebase";
 import Flashcard from "../../components/Flashcard/Flashcard";
-import { auth, firebase } from "../../firebase.js";
+import { AuthUserContext, withAuthorization } from "../../components/Session";
 
-export default class Start extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentCardIndex: 0,
-      cards: null,
-      deck: null
-    };
-  }
+const Start = props => {
+  const { onLoading } = props;
 
-  getDeck = async () => {
-    const { deckId } = this.props.match.params;
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [cards, setCards] = useState(null);
 
-    return await FirestoreApi.getDeck(deckId);
-  };
+  const { deckId } = useParams();
 
-  getFlashcards = async deck => {
-    const { deckId } = this.props.match.params;
+  const authUser = React.useContext(AuthUserContext);
+  const firebase = React.useContext(FirebaseContext);
 
-    let dueCards = [];
-    if (deck && deck.cards) {
-      const today = new Date();
-      for (let [key, value] of Object.entries(deck.cards)) {
-        if (value.dueDate === null || value.dueDate < today) {
-          dueCards.push(key);
-        }
-      }
-    }
-
-    return FirestoreApi.getCardsByIds(deckId, dueCards);
-  };
-
-  handleRatingClick = e => {
-    const cardKey = this.state.cards[this.state.currentCardIndex].id;
+  const handleRatingClick = e => {
+    const cardKey = cards[currentCardIndex].id;
     const ratingId = e.target.id;
 
     if (!cardKey || !ratingId) {
@@ -46,12 +26,12 @@ export default class Start extends React.Component {
 
     const ratingValue = ratingId.split("-")[1];
 
-    this.saveResponse(cardKey, ratingValue);
+    saveResponse(cardKey, ratingValue);
 
-    this.nextCard();
+    nextCard();
   };
 
-  calcGrade = value => {
+  const calcGrade = value => {
     if (value > 1) {
       if (value === 2) {
         return 3;
@@ -62,14 +42,12 @@ export default class Start extends React.Component {
     return 0;
   };
 
-  saveResponse = async (cardId, value) => {
-    const { deckId } = this.props.match.params;
-
+  const saveResponse = async (cardId, value) => {
     // todo: change to transaction when they become available
     // for offline apps
-    const card = await FirestoreApi.getCard(deckId, cardId);
+    const card = await firebase.getCard(deckId, cardId);
 
-    const grade = this.calcGrade(value);
+    const grade = calcGrade(value);
     let interval = 1;
     const nextDay = new Date();
     let ef = 2.5;
@@ -87,7 +65,7 @@ export default class Start extends React.Component {
         })
       };
 
-      return FirestoreApi.updateCard(deckId, cardId, updatedCard);
+      return firebase.updateCard(deckId, cardId, updatedCard);
     }
 
     if (card.ef && card.ef < 2.5) {
@@ -123,79 +101,83 @@ export default class Start extends React.Component {
       })
     };
 
-    return FirestoreApi.updateCard(deckId, cardId, updatedCard);
+    return firebase.updateCard(deckId, cardId, updatedCard);
   };
 
-  nextCard = () => {
-    this.setState(() => ({
-      currentCardIndex: this.state.currentCardIndex + 1
-    }));
+  const nextCard = () => {
+    setCurrentCardIndex(currentCardIndex + 1);
   };
 
-  async componentDidMount() {
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        this.props.onLoading(true);
-
-        try {
-          const deck = await this.getDeck(user.uid);
-          const cards = await this.getFlashcards(deck);
-          if (cards) {
-            this.setState({
-              cards: cards
-            });
+  useEffect(() => {
+    const getCards = async deck => {
+      let dueCards = [];
+      if (deck && deck.cards) {
+        const today = new Date();
+        for (let [key, value] of Object.entries(deck.cards)) {
+          if (value.dueDate === null || value.dueDate < today) {
+            dueCards.push(key);
           }
-        } catch (error) {
-          this.setState({
-            cards: []
-          });
-        } finally {
-          this.props.onLoading(false);
         }
       }
-    });
-  }
 
-  render() {
-    return (
-      <Container>
-        {this.state.cards === null ? (
-          <Row>
-            <Col>
-              <p>Loading...</p>
-            </Col>
-          </Row>
-        ) : this.state.cards &&
-          this.state.currentCardIndex < this.state.cards.length ? (
-          <Row>
-            <Col>
-              {
-                <Flashcard
-                  onRatingClick={this.handleRatingClick}
-                  key={this.state.cards[this.state.currentCardIndex].id}
-                  front={this.state.cards[this.state.currentCardIndex].front}
-                  back={this.state.cards[this.state.currentCardIndex].back}
-                />
-              }
-              <div className="info">
-                <span>
-                  {this.state.currentCardIndex + 1} / {this.state.cards.length}
-                </span>
-              </div>
-            </Col>
-          </Row>
-        ) : (
-          <Row>
-            <Col>
-              <h1>You're done!</h1>
-              <p>
-                This was it for this training session. Check back tomorrow for
-                more cards!
-              </p>
-            </Col>
-          </Row>
-        )}
-      </Container>
-    );
-  }
-}
+      return firebase.getCardsByIds(deckId, dueCards);
+    };
+
+    const getData = async () => {
+      onLoading(true);
+
+      const deck = await firebase.getDeck(deckId);
+      const cards = await getCards(deck);
+
+      setCards(cards);
+
+      onLoading(false);
+    };
+
+    if (authUser) {
+      getData();
+    }
+  }, [authUser, firebase, deckId, onLoading]);
+
+  return (
+    <Container>
+      {cards === null ? (
+        <Row>
+          <Col>
+            <p>Loading...</p>
+          </Col>
+        </Row>
+      ) : cards && currentCardIndex < cards.length ? (
+        <Row>
+          <Col>
+            {
+              <Flashcard
+                onRatingClick={handleRatingClick}
+                key={cards[currentCardIndex].id}
+                front={cards[currentCardIndex].front}
+                back={cards[currentCardIndex].back}
+              />
+            }
+            <div className="info">
+              <span>
+                {currentCardIndex + 1} / {cards.length}
+              </span>
+            </div>
+          </Col>
+        </Row>
+      ) : (
+        <Row>
+          <Col>
+            <h1>You're done!</h1>
+            <p>
+              This was it for this training session. Check back tomorrow for
+              more cards!
+            </p>
+          </Col>
+        </Row>
+      )}
+    </Container>
+  );
+};
+
+export default withAuthorization()(Start);

@@ -1,42 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, NavLink as RRNavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink as RRNavLink, useHistory } from "react-router-dom";
 import {
-  Container,
   Collapse,
-  Navbar as RSNavbar,
-  NavbarToggler,
-  NavbarBrand,
+  Container,
   Nav,
+  Navbar as RSNavbar,
+  NavbarBrand,
+  NavbarToggler,
   NavItem,
   NavLink
 } from "reactstrap";
-import { auth } from "../firebase";
+import { AuthUserContext } from "../components/Session";
 import * as ROUTES from "../constants/routes";
+import { FirebaseContext } from "../components/Firebase/";
 
 const Navigation = () => {
   const [collapsed, setCollapsed] = useState(true);
-
-  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const history = useHistory();
 
   const toggleNavbar = () => setCollapsed(!collapsed);
 
+  const authUser = React.useContext(AuthUserContext);
+  const firebase = React.useContext(FirebaseContext);
+
   const signOut = () => {
-    auth.signOut().then(() => {
+    firebase.doSignOut().then(() => {
       history.push("/");
     });
   };
-
-  useEffect(() => {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        setIsSignedIn(true);
-      } else {
-        setIsSignedIn(false);
-      }
-    });
-  });
 
   return (
     <RSNavbar
@@ -52,7 +44,7 @@ const Navigation = () => {
         <NavbarToggler onClick={toggleNavbar} className="mr-2" />
         <Collapse isOpen={!collapsed} navbar>
           <Nav navbar className="ml-auto">
-            {isSignedIn ? (
+            {authUser ? (
               <>
                 <NavItem>
                   <NavLink
@@ -100,7 +92,7 @@ const Navigation = () => {
               </>
             ) : null}
             <NavItem>
-              {isSignedIn ? (
+              {authUser ? (
                 <NavLink tag={RRNavLink} to={ROUTES.SIGN_OUT} onClick={signOut}>
                   Sign Out
                 </NavLink>

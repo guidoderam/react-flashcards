@@ -1,21 +1,29 @@
-import React from "react";
-import { Container, Col, Row } from "reactstrap";
-import { auth } from "../../firebase.js";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import { Col, Container, Row } from "reactstrap";
+import { FirebaseContext } from "../../components/Firebase";
+import { AuthUserContext, withAuthorization } from "../../components/Session";
 import CreateCardFormContainer from "../../containers/CreateCardFormContainer";
-import FirestoreApi from "../../api/firestoreApi";
 
-export default class Create extends React.Component {
-  constructor(props) {
-    super(props);
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
-    this.state = {
-      decks: [],
-      deckId: null
-    };
-  }
+const Create = props => {
+  const { onLoading } = props;
 
-  handleSubmit = async formValues => {
-    this.props.onLoading(true);
+  const [decks, setDecks] = useState([]);
+
+  let query = useQuery();
+  const deckId = query.get("deckId");
+
+  const authUser = React.useContext(AuthUserContext);
+  const firebase = React.useContext(FirebaseContext);
+
+  const history = useHistory();
+
+  const handleSubmit = async formValues => {
+    onLoading(true);
 
     const today = new Date();
 
@@ -26,50 +34,47 @@ export default class Create extends React.Component {
       created: today,
       updated: today
     };
-    await FirestoreApi.addCard(formValues.deckId, newCard);
 
-    this.props.onLoading(false);
-    this.props.history.goBack();
+    await firebase.addCard(formValues.deckId, newCard);
+
+    onLoading(false);
+    history.goBack();
   };
 
-  async componentDidMount() {
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        this.props.onLoading(true);
+  useEffect(() => {
+    const getDecks = async () => {
+      onLoading(true);
 
-        const decks = await FirestoreApi.getDecks();
+      const decks = await firebase.getDecks();
 
-        const query = new URLSearchParams(this.props.location.search);
-        const deckId = query.get("deckId");
+      setDecks(decks);
 
-        this.setState({
-          decks,
-          deckId
-        });
+      onLoading(false);
+    };
 
-        this.props.onLoading(false);
-      }
-    });
-  }
+    if (authUser) {
+      getDecks();
+    }
+  }, [authUser, firebase, onLoading]);
 
-  render() {
-    return (
-      <Container>
-        <Row>
-          <Col>
-            <h2>Create a new card</h2>
-            {this.state.decks.length > 0 ? (
-              <CreateCardFormContainer
-                deckId={this.state.deckId}
-                decks={this.state.decks}
-                onSubmit={this.handleSubmit}
-              />
-            ) : (
-              <p>Loading...</p>
-            )}
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-}
+  return (
+    <Container>
+      <Row>
+        <Col>
+          <h2>Create a new card</h2>
+          {decks.length > 0 ? (
+            <CreateCardFormContainer
+              deckId={deckId}
+              decks={decks}
+              onSubmit={handleSubmit}
+            />
+          ) : (
+            <p>Loading...</p>
+          )}
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default withAuthorization()(Create);

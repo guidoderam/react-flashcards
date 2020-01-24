@@ -54,7 +54,7 @@ export default class EditDeckFormContainer extends React.Component {
     this.setState({
       id,
       name,
-      isPublic
+      isPublic: isPublic || false
     });
   }
 

@@ -4,7 +4,6 @@ export const SIGN_OUT = "/signout";
 export const TRAIN = "/training";
 export const TRAIN_START = "/training/start/:deckId?";
 export const DECKS = "/decks";
-export const DECK = "/decks/:deckId";
 export const DECK_CREATE = "/decks/create";
 export const DECK_EDIT = "/decks/edit/:deckId";
 export const DECKS_SHARED = "/decks/shared";
