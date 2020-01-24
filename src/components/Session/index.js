@@ -1,4 +1,4 @@
-import AuthUserContext from "./AuthUserContext";
+import AuthUserContext from "./authUserContext";
 import withAuthentication from "./withAuthentication";
 import withAuthorization from "./withAuthorization";
 
