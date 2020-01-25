@@ -4,24 +4,19 @@ import { Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
 import EditDeckFormContainer from "../../containers/EditDeckFormContainer";
-import CardList from "../../components/CardList";
+import CardListContainer from "../../containers/CardList/CardListContainer";
 import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
 const Edit = () => {
   const { setLoading } = React.useContext(LoadingOverlayContext);
-
-  const [deck, setDeck] = useState(null);
-  const [cards, setCards] = useState(null);
-  const [currentCard, setCurrentCard] = useState(null);
-  const [modal, setModal] = useState(false);
-
-  let { deckId } = useParams();
-  let history = useHistory();
-
   const authUser = React.useContext(AuthUserContext);
   const firebase = React.useContext(FirebaseContext);
 
-  const toggle = () => setModal(!modal);
+  const [deck, setDeck] = useState(null);
+  const [cards, setCards] = useState(null);
+
+  let { deckId } = useParams();
+  let history = useHistory();
 
   const handleDeckUpdate = async deck => {
     setLoading(true);
@@ -29,28 +24,6 @@ const Edit = () => {
     firebase.updateDeck(deckId, deck);
     setLoading(false);
     history.goBack();
-  };
-
-  const removeCardFromLocalState = id => {
-    const filteredCards = cards.filter(card => card.id !== id);
-    setCards(filteredCards);
-  };
-
-  const handleDeleteConfirmationClick = async () => {
-    const cardId = currentCard;
-
-    await firebase.deleteCard(deckId, cardId);
-
-    removeCardFromLocalState(cardId);
-    toggle();
-  };
-
-  const handleDeleteClick = e => {
-    const cardId = e.target.dataset.card;
-
-    setCurrentCard(cardId);
-
-    toggle();
   };
 
   useEffect(() => {
@@ -86,16 +59,7 @@ const Edit = () => {
       <Row>
         <Col>
           <h2>Cards</h2>
-          {cards !== null ? (
-            <CardList
-              deck={deck}
-              cards={cards}
-              onDeleteClick={handleDeleteClick}
-              onDeleteConfirmationClick={handleDeleteConfirmationClick}
-              toggle={toggle}
-              modal={modal}
-            />
-          ) : null}
+          {cards !== null ? <CardListContainer /> : null}
         </Col>
       </Row>
     </Container>
