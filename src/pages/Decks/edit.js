@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { Col, Container, Row } from "reactstrap";
+import { Link, useHistory, useParams } from "react-router-dom";
+import { Button, Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
-import { AuthUserContext, withAuthorization } from "../../components/Session";
-import EditDeckFormContainer from "../../containers/EditDeckFormContainer";
-import CardListContainer from "../../containers/CardList/CardListContainer";
 import { LoadingOverlayContext } from "../../components/LoadingOverlay";
+import { AuthUserContext, withAuthorization } from "../../components/Session";
+import * as ROUTES from "../../constants/routes";
+import CardListContainer from "../../containers/CardList/CardListContainer";
+import EditDeckFormContainer from "../../containers/EditDeckFormContainer";
 
 const Edit = () => {
   const { setLoading } = React.useContext(LoadingOverlayContext);
@@ -62,6 +63,20 @@ const Edit = () => {
           {cards !== null ? <CardListContainer /> : null}
         </Col>
       </Row>
+
+      {deck ? (
+        <Row>
+          <Col>
+            <Button
+              color="primary"
+              tag={Link}
+              to={`${ROUTES.CARD_CREATE}?deckId=${deck.id}`}
+            >
+              Create new card
+            </Button>{" "}
+          </Col>
+        </Row>
+      ) : null}
     </Container>
   );
 };
