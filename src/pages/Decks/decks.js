@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button, Col, Container, Row } from "reactstrap";
 import { withAuthorization } from "../../components/Session";
 import * as ROUTES from "../../constants/routes";
-import DeckList from "../../containers/DeckList";
+import DeckListContainer from "../../containers/DeckList/deckListContainer";
 
 const Decks = () => {
   return (
@@ -11,7 +11,7 @@ const Decks = () => {
       <Row>
         <Col>
           <h1>My Decks</h1>
-          <DeckList />
+          <DeckListContainer />
         </Col>
       </Row>
       <Row>
