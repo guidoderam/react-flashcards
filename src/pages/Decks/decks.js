@@ -5,13 +5,13 @@ import { withAuthorization } from "../../components/Session";
 import * as ROUTES from "../../constants/routes";
 import DeckList from "../../containers/DeckList";
 
-const Decks = props => {
+const Decks = () => {
   return (
     <Container>
       <Row>
         <Col>
           <h1>My Decks</h1>
-          <DeckList onLoading={props.onLoading} />
+          <DeckList />
         </Col>
       </Row>
       <Row>

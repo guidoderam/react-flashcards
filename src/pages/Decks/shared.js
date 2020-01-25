@@ -4,9 +4,10 @@ import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
 import * as ROUTES from "../../constants/routes";
 import { useHistory } from "react-router-dom";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
-const SharedDecks = props => {
-  const { onLoading } = props;
+const SharedDecks = () => {
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const [decks, setDecks] = useState([]);
 
@@ -16,10 +17,10 @@ const SharedDecks = props => {
   const firebase = React.useContext(FirebaseContext);
 
   const handleDeckImport = async deckId => {
-    onLoading(true);
+    setLoading(true);
 
     const newDeckId = await firebase.importDeck(deckId);
-    onLoading(false);
+    setLoading(false);
 
     const deckRoute = ROUTES.DECK_EDIT.replace(":deckId", newDeckId);
     history.push(deckRoute);
@@ -27,17 +28,17 @@ const SharedDecks = props => {
 
   useEffect(() => {
     const getDecks = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const decks = await firebase.getSharedDecks();
       setDecks(decks);
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getDecks();
     }
-  }, [authUser, firebase, onLoading]);
+  }, [authUser, firebase, setLoading]);
 
   return (
     <Container>

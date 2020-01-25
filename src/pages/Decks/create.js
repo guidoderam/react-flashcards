@@ -4,18 +4,21 @@ import { Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
 import { withAuthorization } from "../../components/Session";
 import CreateDeckFormContainer from "../../containers/CreateDeckFormContainer";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
-const Create = props => {
+const Create = () => {
+  const { setLoading } = React.useContext(LoadingOverlayContext);
+
   const history = useHistory();
 
   const firebase = React.useContext(FirebaseContext);
 
   const saveDeck = async deck => {
-    props.onLoading(true);
+    setLoading(true);
 
     await firebase.addDeck(deck);
 
-    props.onLoading(false);
+    setLoading(false);
     history.goBack();
   };
 

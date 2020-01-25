@@ -4,13 +4,14 @@ import { Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
 import CreateCardFormContainer from "../../containers/CreateCardFormContainer";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-const Create = props => {
-  const { onLoading } = props;
+const Create = () => {
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const [decks, setDecks] = useState([]);
 
@@ -23,7 +24,7 @@ const Create = props => {
   const history = useHistory();
 
   const handleSubmit = async formValues => {
-    onLoading(true);
+    setLoading(true);
 
     const today = new Date();
 
@@ -37,25 +38,25 @@ const Create = props => {
 
     await firebase.addCard(formValues.deckId, newCard);
 
-    onLoading(false);
+    setLoading(false);
     history.goBack();
   };
 
   useEffect(() => {
     const getDecks = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const decks = await firebase.getDecks();
 
       setDecks(decks);
 
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getDecks();
     }
-  }, [authUser, firebase, onLoading]);
+  }, [authUser, firebase, setLoading]);
 
   return (
     <Container>

@@ -4,9 +4,10 @@ import { Button, Col, Container, Row, Table } from "reactstrap";
 import * as ROUTES from "../../constants/routes";
 import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
-const Train = props => {
-  const { onLoading } = props;
+const Train = () => {
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const [decks, setDecks] = useState(null);
 
@@ -23,7 +24,7 @@ const Train = props => {
 
   useEffect(() => {
     const getDecks = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const decks = await firebase.getDecks();
       const decksWithCardDueNew = decks.map(deck => {
@@ -46,13 +47,13 @@ const Train = props => {
 
       setDecks(decksWithCardDueNew);
 
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getDecks();
     }
-  }, [authUser, firebase, onLoading]);
+  }, [authUser, firebase, setLoading]);
 
   return (
     <Container>

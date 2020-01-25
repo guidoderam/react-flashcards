@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Spinner } from "reactstrap";
+import LoadingOverlayContext from "./loadingOverlayContext";
 
 export default class LoadingOverlay extends React.Component {
   constructor(props) {
@@ -20,13 +21,15 @@ export default class LoadingOverlay extends React.Component {
 
   render() {
     return ReactDOM.createPortal(
-      <>
-        {this.props.isLoading ? (
-          <div className="overlay">
-            <Spinner color="primary" />
-          </div>
-        ) : null}
-      </>,
+      <LoadingOverlayContext.Consumer>
+        {({ loading }) =>
+          loading === true ? (
+            <div className="overlay">
+              <Spinner color="primary" />
+            </div>
+          ) : null
+        }
+      </LoadingOverlayContext.Consumer>,
       this.el
     );
   }

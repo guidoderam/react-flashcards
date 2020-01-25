@@ -5,9 +5,10 @@ import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
 import EditDeckFormContainer from "../../containers/EditDeckFormContainer";
 import CardList from "../../components/CardList";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
-const Edit = props => {
-  const { onLoading } = props;
+const Edit = () => {
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const [deck, setDeck] = useState(null);
   const [cards, setCards] = useState(null);
@@ -23,10 +24,10 @@ const Edit = props => {
   const toggle = () => setModal(!modal);
 
   const handleDeckUpdate = async deck => {
-    onLoading(true);
+    setLoading(true);
 
     firebase.updateDeck(deckId, deck);
-    onLoading(false);
+    setLoading(false);
     history.goBack();
   };
 
@@ -54,7 +55,7 @@ const Edit = props => {
 
   useEffect(() => {
     const getData = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const deck = await firebase.getDeck(deckId);
       const cards = await firebase.getCards(deckId);
@@ -62,13 +63,13 @@ const Edit = props => {
       setDeck(deck);
       setCards(cards);
 
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getData();
     }
-  }, [authUser, firebase, deckId, onLoading]);
+  }, [authUser, firebase, deckId, setLoading]);
 
   return (
     <Container>

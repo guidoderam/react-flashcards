@@ -4,9 +4,10 @@ import { Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
 import EditCardFormContainer from "../../containers/EditCardFormContainer";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
 const Edit = props => {
-  const { onLoading } = props;
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const [card, setCard] = useState(null);
 
@@ -16,7 +17,7 @@ const Edit = props => {
   const { deckId, cardId } = useParams();
 
   const handleSubmit = async formValues => {
-    props.onLoading(true);
+    setLoading(true);
 
     const updateCard = {
       front: formValues.front,
@@ -27,26 +28,26 @@ const Edit = props => {
 
     await firebase.updateCard(deckId, cardId, updateCard);
 
-    props.onLoading(false);
+    setLoading(false);
     props.history.goBack();
   };
 
   useEffect(() => {
     const getData = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const card = await firebase.getCard(deckId, cardId);
 
       setCard(card);
       console.log(card);
 
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getData();
     }
-  }, [authUser, firebase, deckId, cardId, onLoading]);
+  }, [authUser, firebase, deckId, cardId, setLoading]);
 
   return (
     <Container>

@@ -4,9 +4,10 @@ import { Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
 import Flashcard from "../../components/Flashcard/Flashcard";
 import { AuthUserContext, withAuthorization } from "../../components/Session";
+import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 
-const Start = props => {
-  const { onLoading } = props;
+const Start = () => {
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [cards, setCards] = useState(null);
@@ -124,20 +125,20 @@ const Start = props => {
     };
 
     const getData = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const deck = await firebase.getDeck(deckId);
       const cards = await getCards(deck);
 
       setCards(cards);
 
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getData();
     }
-  }, [authUser, firebase, deckId, onLoading]);
+  }, [authUser, firebase, deckId, setLoading]);
 
   return (
     <Container>

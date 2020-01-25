@@ -10,9 +10,10 @@ import {
 } from "reactstrap";
 import { AuthUserContext } from "../components/Session";
 import { FirebaseContext } from "../components/Firebase";
+import { LoadingOverlayContext } from "../components/LoadingOverlay";
 
 const DeckList = props => {
-  const { onLoading } = props;
+  const { setLoading } = React.useContext(LoadingOverlayContext);
 
   const authUser = React.useContext(AuthUserContext);
   const firebase = React.useContext(FirebaseContext);
@@ -50,17 +51,17 @@ const DeckList = props => {
 
   useEffect(() => {
     const getDecks = async () => {
-      onLoading(true);
+      setLoading(true);
 
       const decks = await firebase.getDecks();
       setDecks(decks);
-      onLoading(false);
+      setLoading(false);
     };
 
     if (authUser) {
       getDecks();
     }
-  }, [authUser, firebase, onLoading]);
+  }, [authUser, firebase, setLoading]);
 
   return (
     <>
