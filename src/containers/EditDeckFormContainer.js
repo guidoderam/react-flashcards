@@ -8,6 +8,7 @@ export default class EditDeckFormContainer extends React.Component {
     this.state = {
       id: "",
       name: "",
+      description: "",
       isPublic: false,
       validate: {
         name: ""
@@ -35,7 +36,7 @@ export default class EditDeckFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const { name, isPublic } = this.state;
+    const { name, description, isPublic } = this.state;
 
     if (name.length === 0 || name.length === 0) {
       return;
@@ -43,6 +44,7 @@ export default class EditDeckFormContainer extends React.Component {
 
     const updatedDeck = {
       name,
+      description,
       isPublic
     };
 
@@ -50,16 +52,17 @@ export default class EditDeckFormContainer extends React.Component {
   }
 
   componentDidMount() {
-    const { id, name, isPublic } = this.props.deck;
+    const { id, name, description, isPublic } = this.props.deck;
     this.setState({
       id,
       name,
+      description: description || "",
       isPublic: isPublic || false
     });
   }
 
   render() {
-    const { name, isPublic } = this.state;
+    const { name, description, isPublic } = this.state;
 
     return (
       <Form onSubmit={e => this.handleSubmit(e)}>
@@ -70,6 +73,16 @@ export default class EditDeckFormContainer extends React.Component {
             id="name"
             type="text"
             value={name}
+            onChange={this.handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="description">Description</Label>
+          <Input
+            name="description"
+            id="description"
+            type="textarea"
+            value={description}
             onChange={this.handleChange}
           />
         </FormGroup>

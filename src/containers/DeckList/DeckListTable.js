@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Table } from "reactstrap";
+import truncate from "truncate-html";
 
 const DeckListTable = props => {
   const { decks, onDeleteClick } = props;
@@ -14,6 +15,7 @@ const DeckListTable = props => {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Description</th>
               <th style={{ width: "1px" }}>Cards</th>
               <th style={{ width: "1px" }}></th>
             </tr>
@@ -23,6 +25,7 @@ const DeckListTable = props => {
               return (
                 <tr key={deck.id}>
                   <td>{deck.name}</td>
+                  <td>{truncate(deck.description, 50, { stripTags: true })}</td>
                   <td>{deck.cards ? Object.values(deck.cards).length : 0}</td>
                   <td>
                     <Link to={`/decks/edit/${deck.id}`}>
