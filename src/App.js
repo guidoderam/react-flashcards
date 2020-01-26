@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
-import Navigation from "./components/Navigation";
 import { withLoadingOverlay } from "./components/LoadingOverlay";
+import Navigation from "./components/Navigation";
 import { withAuthentication } from "./components/Session";
 import * as ROUTES from "./constants/routes";
 import CreateCard from "./pages/Cards/create";
@@ -12,6 +12,7 @@ import Decks from "./pages/Decks/decks";
 import EditDeck from "./pages/Decks/edit";
 import SharedDecks from "./pages/Decks/shared";
 import Home from "./pages/Home";
+import NotFound from "./pages/NotFound/notFound";
 import SignIn from "./pages/SignIn";
 import Train from "./pages/Training";
 import Start from "./pages/Training/start";
@@ -71,6 +72,11 @@ const App = () => {
             exact
             path={ROUTES.TRAIN_START}
             render={props => <Start {...props} />}
+          ></Route>
+          <Route
+            exact
+            path="*"
+            render={props => <NotFound {...props} />}
           ></Route>
         </Switch>
       </main>
