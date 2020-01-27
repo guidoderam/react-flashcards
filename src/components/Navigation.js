@@ -43,7 +43,7 @@ const Navigation = () => {
         </NavbarBrand>
         <NavbarToggler onClick={toggleNavbar} className="mr-2" />
         <Collapse isOpen={!collapsed} navbar>
-          <Nav navbar className="ml-auto">
+          <Nav navbar className="ml-auto align-items-center">
             {authUser ? (
               <>
                 <NavItem>
@@ -57,7 +57,7 @@ const Navigation = () => {
                     Train
                   </NavLink>
                 </NavItem>
-                <NavItem>|</NavItem>
+                <NavItem className="pl-2 pr-2 d-none d-md-block">|</NavItem>
                 <NavItem>
                   <NavLink
                     tag={RRNavLink}
