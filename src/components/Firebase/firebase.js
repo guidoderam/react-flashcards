@@ -283,6 +283,9 @@ class Firebase {
   addCard = async (deckId, card, uid = this.auth.currentUser.uid) => {
     const batch = this.db.batch();
 
+    const today = new Date();
+    const cardWithDate = { ...card, created: today, updated: today };
+
     const cardRef = this.db
       .collection("users")
       .doc(uid)
@@ -290,7 +293,7 @@ class Firebase {
       .doc(deckId)
       .collection("cards")
       .doc();
-    batch.set(cardRef, card);
+    batch.set(cardRef, cardWithDate);
 
     const deckRef = this.db
       .collection("users")
@@ -298,7 +301,7 @@ class Firebase {
       .collection("decks")
       .doc(deckId);
     batch.update(deckRef, {
-      [`cards.${cardRef.id}.dueDate`]: card.nextDay || null
+      [`cards.${cardRef.id}.dueDate`]: null
     });
 
     return batch.commit();

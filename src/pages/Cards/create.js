@@ -26,14 +26,10 @@ const Create = () => {
   const handleSubmit = async formValues => {
     setLoading(true);
 
-    const today = new Date();
-
     const newCard = {
       front: formValues.front,
       back: formValues.back,
-      readmore: formValues.readmore,
-      created: today,
-      updated: today
+      readmore: formValues.readmore
     };
 
     await firebase.addCard(formValues.deckId, newCard);
