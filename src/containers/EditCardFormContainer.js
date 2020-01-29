@@ -1,5 +1,6 @@
 import React from "react";
 import RichTextEditor from "react-rte";
+import CustomRichTextEditor from "../components/CustomRichTextEditor";
 import {
   Button,
   Form,
@@ -109,12 +110,15 @@ export default class EditCardFormContainer extends React.Component {
       <Form onSubmit={e => this.handleSubmit(e)}>
         <FormGroup>
           <Label for="front">Front</Label>
-          <RichTextEditor value={front} onChange={this.handleFrontChange} />
+          <CustomRichTextEditor
+            value={front}
+            onChange={this.handleFrontChange}
+          />
           <FormFeedback>Front cannot be empty</FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="back">Back</Label>
-          <RichTextEditor value={back} onChange={this.handleBackChange} />
+          <CustomRichTextEditor value={back} onChange={this.handleBackChange} />
           <FormFeedback>Back cannot be empty</FormFeedback>
         </FormGroup>
         <FormGroup>

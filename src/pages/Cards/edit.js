@@ -39,7 +39,6 @@ const Edit = props => {
       const card = await firebase.getCard(deckId, cardId);
 
       setCard(card);
-      console.log(card);
 
       setLoading(false);
     };
