@@ -217,21 +217,50 @@ class Firebase {
   };
 
   getCardsByIds = async (deckId, cardIds, uid = this.auth.currentUser.uid) => {
-    return this.db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
-      .doc(deckId)
-      .collection("cards")
-      .where(firebase.firestore.FieldPath.documentId(), "in", cardIds)
-      .get()
-      .then(querySnapshot => {
-        return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
+    const getCards = async cardIds => {
+      return this.db
+        .collection("users")
+        .doc(uid)
+        .collection("decks")
+        .doc(deckId)
+        .collection("cards")
+        .where(firebase.firestore.FieldPath.documentId(), "in", cardIds)
+        .get()
+        .then(querySnapshot => {
+          return querySnapshot.docs.map(doc => {
+            const obj = doc.data();
+            obj.id = doc.id;
+            return obj;
+          });
         });
-      });
+    };
+
+    if (cardIds.length <= 10) {
+      return getCards(cardIds);
+    }
+
+    function chunk(array, size) {
+      const chunkedArr = [];
+      let index = 0;
+      while (index < array.length) {
+        chunkedArr.push(array.slice(index, size + index));
+        index += size;
+      }
+      return chunkedArr;
+    }
+
+    const chunkedCardIds = chunk(cardIds, 10);
+
+    let results = [];
+    const getCardsPromises = chunkedCardIds.map(cardIds =>
+      getCards(cardIds).then(result => {
+        results = results.concat(result);
+      })
+    );
+
+    await Promise.all(getCardsPromises);
+
+    return results;
   };
 
   getCard = async (deckId, cardId, uid = this.auth.currentUser.uid) => {
