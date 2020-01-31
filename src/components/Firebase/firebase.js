@@ -75,18 +75,14 @@ class Firebase {
       });
   };
 
-  getSharedDecks = async (uid = this.auth.currentUser.uid) => {
+  getSharedDecks = async () => {
     return this.db
-      .collection("users")
-      .doc(uid)
-      .collection("decks")
+      .collectionGroup("decks")
       .where("isPublic", "==", true)
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
+          return { id: doc.id, ...doc.data() };
         });
       });
   };
