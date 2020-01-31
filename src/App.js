@@ -14,7 +14,7 @@ import SharedDecks from "./pages/Decks/shared";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound/notFound";
 import SignIn from "./pages/SignIn";
-import Train from "./pages/Training";
+import Train from "./pages/Training/training";
 import Start from "./pages/Training/start";
 
 const App = () => {
