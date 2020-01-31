@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { Col, Container, Row } from "reactstrap";
 import { FirebaseContext } from "../../components/Firebase";
-import { AuthUserContext, withAuthorization } from "../../components/Session";
-import CreateCardFormContainer from "../../containers/CreateCardFormContainer";
 import { LoadingOverlayContext } from "../../components/LoadingOverlay";
+import { AuthUserContext, withAuthorization } from "../../components/Session";
+import * as ROUTES from "../../constants/routes";
+import CreateCardFormContainer from "../../containers/CreateCardFormContainer";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -59,14 +60,19 @@ const Create = () => {
       <Row>
         <Col>
           <h2>Create a new card</h2>
-          {decks.length > 0 ? (
+          {decks === null ? (
+            <p>Loading...</p>
+          ) : decks.length > 0 ? (
             <CreateCardFormContainer
               deckId={deckId}
               decks={decks}
               onSubmit={handleSubmit}
             />
           ) : (
-            <p>Loading...</p>
+            <p>
+              You don't have any decks yet.{" "}
+              <Link to={ROUTES.DECK_CREATE}>Click here</Link> to create a deck.
+            </p>
           )}
         </Col>
       </Row>

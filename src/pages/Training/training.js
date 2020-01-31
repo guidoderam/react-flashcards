@@ -69,7 +69,7 @@ const Train = () => {
           )}
         </Col>
       </Row>
-      {decks ? (
+      {decks && decks.length > 0 ? (
         <Table>
           <thead>
             <tr>
