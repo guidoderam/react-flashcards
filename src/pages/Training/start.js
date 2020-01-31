@@ -149,23 +149,21 @@ const Start = () => {
           </Col>
         </Row>
       ) : cards && currentCardIndex < cards.length ? (
-        <Row>
-          <Col>
-            {
-              <Flashcard
-                onRatingClick={handleRatingClick}
-                key={cards[currentCardIndex].id}
-                front={cards[currentCardIndex].front}
-                back={cards[currentCardIndex].back}
-              />
-            }
-            <div className="info">
-              <span>
-                {currentCardIndex + 1} / {cards.length}
-              </span>
-            </div>
-          </Col>
-        </Row>
+        <>
+          {
+            <Flashcard
+              onRatingClick={handleRatingClick}
+              key={cards[currentCardIndex].id}
+              front={cards[currentCardIndex].front}
+              back={cards[currentCardIndex].back}
+            />
+          }
+          <div className="info">
+            <span>
+              {currentCardIndex + 1} / {cards.length}
+            </span>
+          </div>
+        </>
       ) : (
         <Row>
           <Col>

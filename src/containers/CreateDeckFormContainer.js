@@ -91,7 +91,9 @@ export default class CreateDeckFormContainer extends React.Component {
             won't affect your deck.
           </FormText>
         </FormGroup>
-        <Button color="primary">Submit</Button>
+        <FormGroup>
+          <Button color="primary">Submit</Button>
+        </FormGroup>
       </Form>
     );
   }

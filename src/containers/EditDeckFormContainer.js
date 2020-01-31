@@ -101,7 +101,9 @@ export default class EditDeckFormContainer extends React.Component {
             won't affect your deck.
           </FormText>
         </FormGroup>
-        <Button color="primary">Save</Button>
+        <FormGroup>
+          <Button color="primary">Save</Button>
+        </FormGroup>
       </Form>
     );
   }

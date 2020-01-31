@@ -21,7 +21,7 @@ const App = () => {
   return (
     <Router>
       <Navigation />
-      <main role="main">
+      <main role="main" className="main">
         <Switch>
           <Route
             exact

@@ -139,7 +139,9 @@ export default class EditCardFormContainer extends React.Component {
           </FormText>
           <FormFeedback>Read more needs to be a valid URL</FormFeedback>
         </FormGroup>
-        <Button color="primary">Submit</Button>
+        <FormGroup>
+          <Button color="primary">Submit</Button>
+        </FormGroup>
       </Form>
     );
   }

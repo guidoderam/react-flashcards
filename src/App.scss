@@ -4,6 +4,25 @@ $dark-blue: #2c3e50;
 $primary: $teal;
 $secondary: $dark-blue;
 
+html,
+body,
+#root {
+  height: 100%;
+}
+#root {
+  display: flex;
+  flex-flow: column;
+  margin: 0;
+}
+
+.main {
+  flex: 2;
+
+  .container {
+    height: calc(100% - 60px);
+  }
+}
+
 nav.navbar {
   padding: 0px 16px;
 
@@ -13,6 +32,10 @@ nav.navbar {
 }
 
 .flashcard {
+  height: 100%;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
   background-color: #f1c954;
   border-radius: 5px;
   cursor: pointer;
@@ -26,6 +49,7 @@ nav.navbar {
   }
 
   &__content {
+    height: 100%;
     padding: 15px;
   }
 
