@@ -15,6 +15,7 @@
 .DS_Store
 .firebase
 .firebaserc
+firebase-debug.log
 .env.local
 .env.development
 .env.development.local
