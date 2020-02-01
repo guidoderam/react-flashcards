@@ -92,13 +92,13 @@ const Navigation = () => {
               </>
             ) : null}
             <NavItem>
-              {authUser ? (
-                <NavLink tag={RRNavLink} to={ROUTES.SIGN_OUT} onClick={signOut}>
-                  Sign Out
-                </NavLink>
-              ) : (
+              {!authUser || (authUser && authUser.isAnonymous) ? (
                 <NavLink tag={RRNavLink} to={ROUTES.SIGN_IN}>
                   Sign In
+                </NavLink>
+              ) : (
+                <NavLink tag={RRNavLink} to={ROUTES.SIGN_OUT} onClick={signOut}>
+                  Sign Out
                 </NavLink>
               )}
             </NavItem>

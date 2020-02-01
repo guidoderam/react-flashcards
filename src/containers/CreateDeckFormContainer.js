@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Form, FormGroup, FormText, Input, Label } from "reactstrap";
+import { AuthUserContext } from "../components/Session";
 
 export default class CreateDeckFormContainer extends React.Component {
   constructor(props) {
@@ -76,21 +77,27 @@ export default class CreateDeckFormContainer extends React.Component {
             onChange={this.handleChange}
           />
         </FormGroup>
-        <FormGroup check className="mb-3">
-          <Label check>
-            <Input
-              type="checkbox"
-              name="isPublic"
-              checked={isPublic}
-              onChange={e => this.handleChange(e)}
-            />
-            Share Deck
-          </Label>
-          <FormText color="muted">
-            Shared decks can be imported by other users. Changes made by others
-            won't affect your deck.
-          </FormText>
-        </FormGroup>
+        <AuthUserContext.Consumer>
+          {user => {
+            return user && !user.isAnonymous ? (
+              <FormGroup check className="mb-3">
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    name="isPublic"
+                    checked={isPublic}
+                    onChange={e => this.handleChange(e)}
+                  />
+                  Share Deck
+                </Label>
+                <FormText color="muted">
+                  Shared decks can be imported by other users. Changes made by
+                  others won't affect your deck.
+                </FormText>
+              </FormGroup>
+            ) : null;
+          }}
+        </AuthUserContext.Consumer>
         <FormGroup>
           <Button color="primary">Submit</Button>
         </FormGroup>
