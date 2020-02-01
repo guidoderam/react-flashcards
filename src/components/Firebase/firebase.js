@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import "firebase/functions";
 import "firebase/firestore";
 var firebaseui = require("firebaseui");
 
@@ -68,9 +69,7 @@ class Firebase {
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
+          return { id: doc.id, ...doc.data() };
         });
       });
   };
@@ -103,11 +102,12 @@ class Firebase {
   };
 
   addDeck = async (deck, uid = this.auth.currentUser.uid) => {
-    return this.db
+    const deckRef = this.db
       .collection("users")
       .doc(uid)
       .collection("decks")
-      .add(deck);
+      .doc();
+    deckRef.set({ id: deckRef.id, ...deck });
   };
 
   updateDeck = async (deckId, deck, uid = this.auth.currentUser.uid) => {
@@ -128,69 +128,11 @@ class Firebase {
       .delete();
   };
 
-  importDeck = async (deckId, uid = this.auth.currentUser.uid) => {
-    const cards = await this.getCards(deckId, uid);
+  importDeck = async deckId => {
+    var importDeck = firebase.functions().httpsCallable("importDeck");
+    const result = await importDeck({ deckId });
 
-    // todo: batch writes cannot handle more than 500 writes
-    //
-    if (cards.length === 0 || cards.length > 499) {
-      return false;
-    }
-
-    const batch = this.db.batch();
-
-    const newDeckRef = this.db
-      .collection("users")
-      .doc(this.auth.currentUser.uid)
-      .collection("decks")
-      .doc();
-
-    const originalDeck = await this.getDeck(deckId, uid);
-
-    const newDeck = {
-      name: `${originalDeck.name} (Imported)`,
-      isPublic: false,
-      originalDeck: originalDeck.id
-    };
-
-    batch.set(newDeckRef, newDeck);
-
-    let updatedDeck = {};
-
-    // We need to add the card ids to the deck's card object
-    // to satisfy Firestore's security rules before adding the
-    // individual cards to the batch. Doing this upfront saves
-    // us a write operation per card
-    cards.forEach(card => {
-      const cardRef = this.db
-        .collection("users")
-        .doc(this.auth.currentUser.uid)
-        .collection("decks")
-        .doc(newDeckRef.id)
-        .collection("cards")
-        .doc();
-
-      // Save the cardRef to the card object for convenience
-      card.newCardRef = cardRef;
-
-      updatedDeck[`cards.${cardRef.id}.dueDate`] = null;
-    });
-
-    batch.update(newDeckRef, updatedDeck);
-
-    cards.forEach(card => {
-      batch.set(card.newCardRef, {
-        front: card.front,
-        back: card.back,
-        readmore: card.readmore,
-        created: card.created,
-        updated: card.updated
-      });
-    });
-
-    await batch.commit();
-
-    return newDeckRef.id;
+    return result;
   };
 
   // *** Card API ***
@@ -205,9 +147,7 @@ class Firebase {
       .get()
       .then(querySnapshot => {
         return querySnapshot.docs.map(doc => {
-          const obj = doc.data();
-          obj.id = doc.id;
-          return obj;
+          return { id: doc.id, ...doc.data() };
         });
       });
   };
@@ -224,9 +164,7 @@ class Firebase {
         .get()
         .then(querySnapshot => {
           return querySnapshot.docs.map(doc => {
-            const obj = doc.data();
-            obj.id = doc.id;
-            return obj;
+            return { id: doc.id, ...doc.data() };
           });
         });
     };
@@ -358,4 +296,3 @@ class Firebase {
 }
 
 export default Firebase;
-//export { firebase, provider, auth, this.db, ui };

@@ -20,11 +20,14 @@ const SharedDecks = () => {
   const handleDeckImport = async deckId => {
     setLoading(true);
 
-    const newDeckId = await firebase.importDeck(deckId);
+    const result = await firebase.importDeck(deckId);
     setLoading(false);
 
-    const deckRoute = ROUTES.DECK_EDIT.replace(":deckId", newDeckId);
-    history.push(deckRoute);
+    if (result.data.success) {
+      const newDeckId = result.data.deckId;
+      const deckRoute = ROUTES.DECK_EDIT.replace(":deckId", newDeckId);
+      history.push(deckRoute);
+    }
   };
 
   useEffect(() => {
