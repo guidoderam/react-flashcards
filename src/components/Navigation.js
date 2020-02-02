@@ -73,7 +73,10 @@ const Navigation = () => {
                     tag={RRNavLink}
                     exact
                     to={ROUTES.DECKS}
-                    active={window.location.href.indexOf(ROUTES.DECKS) !== -1}
+                    active={
+                      window.location.href.indexOf(ROUTES.DECKS_SHARED) ===
+                        -1 && window.location.href.indexOf(ROUTES.DECKS) !== -1
+                    }
                     activeClassName="active"
                   >
                     My Decks
