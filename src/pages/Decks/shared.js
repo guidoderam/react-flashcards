@@ -49,7 +49,11 @@ const SharedDecks = () => {
       <Row>
         <Col>
           <h1>Shared Decks</h1>
-
+          <p>
+            These are decks created by other users. Importing a shared deck to
+            your own collection creates a copy that you can use like any regular
+            deck.{" "}
+          </p>
           {decks && decks.length > 0 ? (
             <Table>
               <thead>

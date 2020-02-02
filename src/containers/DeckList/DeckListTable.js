@@ -47,7 +47,7 @@ const DeckListTable = props => {
           </tbody>
         </Table>
       ) : (
-        <p>You haven't created any decks yet.</p>
+        <p>You have not created any decks yet.</p>
       )}
     </>
   );

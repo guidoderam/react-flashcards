@@ -16,6 +16,12 @@ const Train = () => {
 
   const history = useHistory();
 
+  const decksHaveAvailableCards = () => {
+    decks.some(value => {
+      return value.newCards > 0 || value.dueCards > 0;
+    });
+  };
+
   const handleStartBtnClick = e => {
     const deckId = e.target.dataset.deck;
     const startRoute = ROUTES.TRAIN_START.replace(":deckId?", deckId);
@@ -59,13 +65,17 @@ const Train = () => {
     <Container>
       <Row>
         <Col>
-          <h2>Welcome</h2>
+          <h2>Study a deck</h2>
           {decks == null ? (
             <p>Loading...</p>
           ) : decks.length > 0 ? (
-            <p>You have cards due for these decks.</p>
+            decksHaveAvailableCards() ? (
+              <p>You have cards due. Select a deck to start studying!</p>
+            ) : (
+              <p>You have finished all decks for now. Check back tomorrow!</p>
+            )
           ) : (
-            <p>You have finished all decks for now.</p>
+            <p>You have not created any decks yet.</p>
           )}
         </Col>
       </Row>
