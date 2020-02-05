@@ -39,7 +39,7 @@ const Navigation = () => {
     >
       <Container>
         <NavbarBrand tag={RRNavLink} to={ROUTES.HOME}>
-          React-Flashcards
+          React Flashcards
         </NavbarBrand>
         <NavbarToggler onClick={toggleNavbar} className="mr-2" />
         <Collapse isOpen={!collapsed} navbar>

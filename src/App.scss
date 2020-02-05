@@ -27,6 +27,11 @@ body,
   margin: 0;
 }
 
+p + ul,
+ol {
+  margin-top: -0.5rem;
+}
+
 .main {
   flex: 2;
 
