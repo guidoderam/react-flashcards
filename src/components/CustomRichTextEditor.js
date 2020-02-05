@@ -1,28 +1,26 @@
 import React from "react";
-import RichTextEditor from "react-rte";
+import { Editor } from "@tinymce/tinymce-react";
+import "tinymce/tinymce";
+import "tinymce/themes/silver/theme";
+import "tinymce/plugins/fullscreen";
+import "tinymce/plugins/paste";
+import "tinymce/plugins/autoresize";
 
 const CustomRichTextEditor = props => {
   const { value, onChange } = props;
 
-  const toolbarConfig = {
-    // Optionally specify the groups to display (displayed in the order listed).
-    display: ["INLINE_STYLE_BUTTONS", "BLOCK_TYPE_BUTTONS", "HISTORY_BUTTONS"],
-    INLINE_STYLE_BUTTONS: [
-      { label: "Bold", style: "BOLD", className: "custom-css-class" },
-      { label: "Italic", style: "ITALIC" },
-      { label: "Underline", style: "UNDERLINE" }
-    ],
-    BLOCK_TYPE_BUTTONS: [
-      { label: "UL", style: "unordered-list-item" },
-      { label: "OL", style: "ordered-list-item" }
-    ]
-  };
-
   return (
-    <RichTextEditor
-      toolbarConfig={toolbarConfig}
-      value={value}
+    <Editor
+      initialValue="<p></p>"
+      init={{
+        height: 500,
+        menubar: false,
+        plugins: ["paste", "autoresize"],
+        toolbar:
+          "undo redo | formatselect | bold italic underline | bullist numlist | removeformat"
+      }}
       onChange={onChange}
+      value={value}
     />
   );
 };

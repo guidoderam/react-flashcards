@@ -1,5 +1,4 @@
 import React from "react";
-import RichTextEditor from "react-rte";
 import CustomRichTextEditor from "../components/CustomRichTextEditor";
 import {
   Button,
@@ -15,8 +14,8 @@ export default class EditCardFormContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      front: RichTextEditor.createEmptyValue(),
-      back: RichTextEditor.createEmptyValue(),
+      front: "<p></p>",
+      back: "<p></p>",
       id: "",
       readmore: "",
       validate: {
@@ -97,9 +96,9 @@ export default class EditCardFormContainer extends React.Component {
 
     this.setState({
       id,
-      front: RichTextEditor.createValueFromString(front, "html"),
-      back: RichTextEditor.createValueFromString(back, "html"),
-      readmore
+      front,
+      back,
+      readmore: readmore || ""
     });
   }
 

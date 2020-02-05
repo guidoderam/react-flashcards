@@ -1,3 +1,15 @@
+@import "~tinymce/skins/ui/oxide/skin.min.css";
+@import "~tinymce/skins/ui/oxide/content.min.css";
+@import "~tinymce/skins/content/default/content.min.css";
+
+// reset tinymce table borders
+.table {
+  td,
+  th {
+    border: none;
+  }
+}
+
 $teal: #1abc9c;
 $dark-blue: #2c3e50;
 
