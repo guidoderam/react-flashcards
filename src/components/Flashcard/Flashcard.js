@@ -37,7 +37,11 @@ export default class Flashcard extends React.Component {
         </Row>
         {this.state.flipped ? (
           <Row className="flashcard__footer" onClick={this.props.onRatingClick}>
-            <Rating onClick={this.props.onRatingClick} />
+            <Rating
+              onClick={this.props.onRatingClick}
+              rating2={this.props.rating2}
+              rating5={this.props.rating5}
+            />
           </Row>
         ) : null}
       </div>

@@ -4,6 +4,7 @@ import { FirebaseContext } from "../../components/Firebase";
 import { AuthUserContext } from "../../components/Session";
 import { LoadingOverlayContext } from "../../components/LoadingOverlay";
 import Flashcard from "../../components/Flashcard/Flashcard";
+import * as Sm2 from "../../utils/sm2";
 
 const CardReview = () => {
   const { setLoading } = React.useContext(LoadingOverlayContext);
@@ -31,23 +32,12 @@ const CardReview = () => {
     nextCard();
   };
 
-  const calcGrade = value => {
-    if (value > 1) {
-      if (value === 2) {
-        return 3;
-      }
-      return 5;
-    }
-
-    return 0;
-  };
-
   const saveResponse = async (cardId, value) => {
     // todo: change to transaction when they become available
     // for offline apps
     const card = await firebase.getCard(deckId, cardId);
 
-    const grade = calcGrade(value);
+    const grade = Sm2.calcGrade(value);
     let interval = 1;
     const nextDay = new Date();
     let ef = 2.5;
@@ -146,6 +136,16 @@ const CardReview = () => {
       {
         <Flashcard
           onRatingClick={handleRatingClick}
+          rating2={Sm2.getNextReviewIntervalString(
+            2,
+            cards[currentCardIndex].ef,
+            cards[currentCardIndex].repetition
+          )}
+          rating5={Sm2.getNextReviewIntervalString(
+            5,
+            cards[currentCardIndex].ef,
+            cards[currentCardIndex].repetition
+          )}
           key={cards[currentCardIndex].id}
           front={cards[currentCardIndex].front}
           back={cards[currentCardIndex].back}
