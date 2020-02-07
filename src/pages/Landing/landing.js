@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
+import { AuthUserContext } from "../../components/Session";
+import * as ROUTES from "../../constants/routes";
 
-const Home = () => {
+const Landing = () => {
+  const authUser = React.useContext(AuthUserContext);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (authUser && !authUser.isAnonymous) {
+      history.push(ROUTES.TRAIN);
+    }
+  }, [authUser, history]);
+
   return (
     <Container>
       <Row>
@@ -55,4 +67,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Landing;

@@ -11,7 +11,7 @@ import CreateDeck from "./pages/Decks/create";
 import Decks from "./pages/Decks/decks";
 import EditDeck from "./pages/Decks/edit";
 import SharedDecks from "./pages/Decks/shared";
-import Home from "./pages/Home";
+import Landing from "./pages/Landing/landing";
 import NotFound from "./pages/NotFound/notFound";
 import SignIn from "./pages/SignIn";
 import Train from "./pages/Training/training";
@@ -25,8 +25,8 @@ const App = () => {
         <Switch>
           <Route
             exact
-            path={ROUTES.HOME}
-            render={props => <Home {...props} />}
+            path={ROUTES.LANDING}
+            render={props => <Landing {...props} />}
           ></Route>
           <Route
             exact

@@ -38,7 +38,7 @@ const Navigation = () => {
       className="pt-3 pb-3 text-uppercase"
     >
       <Container>
-        <NavbarBrand tag={RRNavLink} to={ROUTES.HOME}>
+        <NavbarBrand tag={RRNavLink} to={ROUTES.LANDING}>
           React Flashcards
         </NavbarBrand>
         <NavbarToggler onClick={toggleNavbar} className="mr-2" />
