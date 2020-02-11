@@ -1,23 +1,32 @@
 import React from "react";
-import { Col } from "reactstrap";
+import { Col, Button } from "reactstrap";
 
 const Rating = props => {
   return (
     <>
-      <Col xs="4" className="rating bg-danger">
-        <span id="star-1" className="fa fa-frown-o">
-          10 minutes
-        </span>
+      <Col sm="3" className="rating">
+        <span className="due-time">&lt;10min</span>
+        <Button color="warning" block>
+          Again
+        </Button>
       </Col>
-      <Col xs="4" className="rating bg-warning">
-        <span id="star-2" className="fa fa-meh-o">
-          {props.rating2}
-        </span>
+      <Col sm="3" className="rating">
+        <span className="due-time">{props.rating2}</span>
+        <Button color="success" block>
+          Hard
+        </Button>
       </Col>
-      <Col xs="4" className="rating bg-success">
-        <span id="star-3" className="fa fa-smile-o">
-          {props.rating5}
-        </span>
+      <Col sm="3" className="rating">
+        <span className="due-time">{props.rating5}</span>
+        <Button color="success" block>
+          Good
+        </Button>
+      </Col>
+      <Col sm="3" className="rating">
+        <span className="due-time">&lt;10min</span>
+        <Button color="success" block>
+          Easy
+        </Button>
       </Col>
     </>
   );

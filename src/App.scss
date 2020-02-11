@@ -53,8 +53,10 @@ nav.navbar {
   margin-top: 15px;
   display: flex;
   flex-direction: column;
-  background-color: #f1c954;
   border-radius: 5px;
+  border-width: 5px;
+  border-style: double;
+  border-color: #dee2e6;
   cursor: pointer;
   min-width: 100%;
 
@@ -62,7 +64,7 @@ nav.navbar {
     margin: 0 !important;
     padding: 15px;
     text-align: center;
-    border-bottom: thin solid #212529;
+    border-bottom: thin solid #dee2e6;
   }
 
   &__content {
@@ -75,15 +77,19 @@ nav.navbar {
     width: 100%;
     font-size: 2rem;
     text-align: center;
+    border-top-style: solid;
+    border-top-width: thin;
+    border-top-color: #dee2e6;
   }
 }
 
 .rating {
-  &:first-child {
-    border-radius: 0 0 0 5px;
-  }
-  &:last-child {
-    border-radius: 0 0 5px 0;
+  margin: 8px 0;
+
+  .due-time {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+    display: block;
   }
 }
 
