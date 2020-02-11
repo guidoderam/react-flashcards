@@ -87,8 +87,8 @@ export default class CreateCardFormContainer extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const front = this.state.front.toString("html");
-    const back = this.state.back.toString("html");
+    const front = this.state.front;
+    const back = this.state.back;
     const readmore = this.state.readmore;
     const deckId = this.state.deckId;
 

@@ -19,7 +19,7 @@ const CustomRichTextEditor = props => {
         toolbar:
           "undo redo | formatselect | bold italic underline | bullist numlist | removeformat"
       }}
-      onChange={onChange}
+      onEditorChange={onChange}
       value={value}
     />
   );
